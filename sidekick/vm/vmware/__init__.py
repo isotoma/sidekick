@@ -1,4 +1,4 @@
-
+from ctypes import byref
 from sidekick.vm.vmware import low
 
 class Job(object):
@@ -11,7 +11,7 @@ class Job(object):
         err = low.vix.VixJob_Wait(self.handle, *properties)
         if err != low.VIX_OK:
             raise ValueError(err)
-        low.vix.Vix_ReleaeHandle(self.handle)
+        low.vix.Vix_ReleaseHandle(self.handle)
 
 
 class Provider(object):
@@ -26,11 +26,11 @@ class Provider(object):
         self.handle = None
 
     def connect(self):
-        if conntype is None:
+        if self.conntype is None:
             raise NotImplementedError(self.conntype)
         j = Job(low.vix.VixHost_Connect(low.VIX_API_VERSION,
             self.conntype, self.hostname, self.hostport, self.username, self.password, 0,
-            low.VIX_INVALID_HANDLE, None, None)
+            low.VIX_INVALID_HANDLE, None, None))
 
         self.handle = low.VixHandle()
         j.wait(low.VIX_PROPERTY_JOB_RESULT_HANDLE, byref(self.handle), low.VIX_PROPERTY_NONE)
@@ -71,17 +71,17 @@ class VirtualMachine(object):
         self.vm = None
 
     def open(self):
-        job = Job(low.vix.VixVM_open(self.host, self.path, None, None))
-        self.vm = vmware.VixHandle()
+        job = Job(low.vix.VixVM_Open(self.host, self.path, None, None))
+        self.vm = low.VixHandle()
         job.wait(low.VIX_PROPERTY_JOB_RESULT_HANDLE, byref(self.vm), low.VIX_PROPERTY_NONE)
 
     def power_on(self):
-        job = Job(low.vix.VixVM_PowerOn(self.vm, options, low.VIX_INVALID_HANDLE, None, None))
-        job.wait(vmware.VIX_PROPERTY_NONE)
+        job = Job(low.vix.VixVM_PowerOn(self.vm, low.VIX_VMPOWEROP_NORMAL, low.VIX_INVALID_HANDLE, None, None))
+        job.wait(low.VIX_PROPERTY_NONE)
 
     def power_off(self):
-        job = Job(low.vix.VixVM_PowerOff(self.vm, vmware.VIX_VMPOWEROP_NORMAL, None, None))
-        job.wait(vmware.VIX_PROPERTY_NONE)
+        job = Job(low.vix.VixVM_PowerOff(self.vm, low.VIX_VMPOWEROP_NORMAL, None, None))
+        job.wait(low.VIX_PROPERTY_NONE)
 
     def release(self):
         low.vix.Vix_ReleaseHandle(self.vm)
