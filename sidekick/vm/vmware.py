@@ -1,6 +1,7 @@
 from ctypes import *
 # if on Windows, may need to change following to use WinDLL instead of CDLL
-vix = CDLL('vix.dll')
+#vix = CDLL('vix.dll')
+vix = CDLL('/usr/lib/vmware-vix/libvixAllProducts.so')
 
 # user defined types
 VixHandle = c_int

@@ -23,42 +23,43 @@ else:
     vmpathinfo = "[datastore] PATH/TO.VMX"
 
 
-job = vmware.VixHost_Connect(vmware.VIX_API_VERSION,
+options = 0
+job = vmware.vix.VixHost_Connect(vmware.VIX_API_VERSION,
     conntype, hostname, hostport, username, password, options, vmware.VIX_INVALID_HANDLE, None, None)
 
 host = vmware.VixHandle()
-err = VixJob_Wait(job, vmware.VIX_PROPERTY_JOB_RESULT_HANDLE, host, VIX_PROPERTY_NONE)
+err = vmware.vix.VixJob_Wait(job, vmware.VIX_PROPERTY_JOB_RESULT_HANDLE, host, vmware.VIX_PROPERTY_NONE)
 if err != vmware.VIX_OK:
     raise ValueError(err)
 
-vmware.Vix_ReleaseHandle(job)
+vmware.vix.Vix_ReleaseHandle(job)
 
 
 job = VixVM_Open(host, vmpathinfo, None, None)
 vm = vmware.VixHandle()
-err = vmware.VixJob_Wait(job, VIX_PROPERTY_JOB_RESULT_HANDLE, vm, VIX_PROPERTY_NONE)
+err = vmware.vix.VixJob_Wait(job, vmware.VIX_PROPERTY_JOB_RESULT_HANDLE, vm, vmware.VIX_PROPERTY_NONE)
 if err != vmware.VIX_OK:
     raise ValueError(err)
 
-vmware.Vix_ReleaseHandle(job)
+vmware.vix.Vix_ReleaseHandle(job)
 
 
-job = vmware.VixVM_PowerOn(vm, vmpoweroptions, vmware.VIX_INVALID_HANDLE, None, None)
-err = vmware,VixJob_Wait(job, VIX_PROPERTY_NONE)
+job = vmware.vix.VixVM_PowerOn(vm, vmpoweroptions, vmware.VIX_INVALID_HANDLE, None, None)
+err = vmware.vix.VixJob_Wait(job, vmware.VIX_PROPERTY_NONE)
 if err != vmware.VIX_OK:
     raise ValueError(err)
 
-vmware.Vix_ReleaseHandle(jobHandle);
+vmware.vix.Vix_ReleaseHandle(jobHandle);
 
 
-job = vmware.VixVM_PowerOff(vm, vmware.VIX_VMPOWEROP_NORMAL, None, None)
-err = vmware.VixJob_Wait(job, VIX_PROPERTY_NONE)
+job = vmware.vix.VixVM_PowerOff(vm, vmware.VIX_VMPOWEROP_NORMAL, None, None)
+err = vmware.vix.VixJob_Wait(job, vmware.VIX_PROPERTY_NONE)
 if err != vmware.VIX_OK:
     raise ValueError(err)
 
-vmware.Vix_ReleaseHandle(job)
-vmware.Vix_ReleaseHandle(vm)
+vmware.vix.Vix_ReleaseHandle(job)
+vmware.vix.Vix_ReleaseHandle(vm)
 
-vmware.VixHost_Disconnect(host)
+vmware.vix.VixHost_Disconnect(host)
 
 
