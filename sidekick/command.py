@@ -17,6 +17,8 @@ class CommandType(type):
 
 class Command(object):
 
+    __metaclass__ = CommandType
+
     def do(self):
         raise NotImplementedError
 

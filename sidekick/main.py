@@ -1,3 +1,4 @@
+import sys
 from sidekick.command import Command, CommandType
 
 class Up(Command):
@@ -8,7 +9,7 @@ class Down(Command):
 
 def main():
     if len(sys.argv) < 2:
-        print "Usage: %s <%s> [OPTIONS]" % (sys.argv[0], '|'.join(commands.keys())
+        print "Usage: %s <%s> [OPTIONS]" % (sys.argv[0], '|'.join(CommandType.commands.keys()))
         sys.exit(1)
 
     command = sys.argv[1]
