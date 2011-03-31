@@ -2,67 +2,20 @@
 from sidekick.vm import vmware
 from ctypes import byref
 
-workstation = True
+from sidekick.vm.vmware import PlayerProvider, WorkstationProvider, ViServerProvider
 
-if workstation:
-    conntype = vmware.VIX_SERVICEPROVIDER_VMWARE_PLAYER #_WORKSTATION
-    hostname = ""
-    hostport = 0
-    username = ""
-    password = ""
-    vmpoweroptions = vmware.VIX_VMPOWEROP_LAUNCH_GUI
-
-    vmpathinfo = '/home/john/vmware/lucid/lucid.vmx'
-else:
-    conntype = vmware.VIX_SERVICEPROVIDER_VMWARE_VI_SERVER
-    hostname = "https://192.169.201.1:8333/sdk"
-    hostport = 0
-    username = "root"
-    password = "hideme"
-    vmpoweroptions = vmware.VIX_VMPOWEROP_NORMAL
-
-    vmpathinfo = "[datastore] PATH/TO.VMX"
-
-
-options = 0
-job = vmware.vix.VixHost_Connect(vmware.VIX_API_VERSION,
-    conntype, hostname, hostport, username, password, options, vmware.VIX_INVALID_HANDLE, None, None)
-
-host = vmware.VixHandle()
-err = vmware.vix.VixJob_Wait(job, vmware.VIX_PROPERTY_JOB_RESULT_HANDLE, byref(host), vmware.VIX_PROPERTY_NONE)
-if err != vmware.VIX_OK:
-    raise ValueError(err)
-
-vmware.vix.Vix_ReleaseHandle(job)
-
-
-job = vmware.vix.VixVM_Open(host, vmpathinfo, None, None)
-vm = vmware.VixHandle()
-err = vmware.vix.VixJob_Wait(job, vmware.VIX_PROPERTY_JOB_RESULT_HANDLE, byref(vm), vmware.VIX_PROPERTY_NONE)
-if err != vmware.VIX_OK:
-    raise ValueError(err)
-
-vmware.vix.Vix_ReleaseHandle(job)
-
-
-job = vmware.vix.VixVM_PowerOn(vm, vmpoweroptions, vmware.VIX_INVALID_HANDLE, None, None)
-err = vmware.vix.VixJob_Wait(job, vmware.VIX_PROPERTY_NONE)
-if err != vmware.VIX_OK:
-    raise ValueError(err)
-
-vmware.vix.Vix_ReleaseHandle(job)
-
-
-job = vmware.vix.VixVM_PowerOff(vm, vmware.VIX_VMPOWEROP_NORMAL, None, None)
-err = vmware.vix.VixJob_Wait(job, vmware.VIX_PROPERTY_NONE)
-if err != vmware.VIX_OK:
-    raise ValueError(err)
-
-vmware.vix.Vix_ReleaseHandle(job)
-vmware.vix.Vix_ReleaseHandle(vm)
-
-vmware.vix.VixHost_Disconnect(host)
 
 def main():
-    pass
+    provider = PlayerProvider()
+    #provider = WorkstationProvider()
+    #provider = ViServerProvider("https://192.168.201.1:8333/sdk", "root", "hideme")
+
+    provider.connect()
+
+    vm = provider.open("/home/john/vmware/lucid/lucid.vmx")
+    vm.power_on()
+    vm.power_off()
+    vm.release()
+
+    provider.disconnect()
 
