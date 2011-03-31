@@ -26,6 +26,6 @@ setup(name='Sidekick',
           },
       entry_points = """
       [console_scripts]
-      sidekick = sidekick.test:main
+      sidekick = sidekick.main:main
       """
       )
