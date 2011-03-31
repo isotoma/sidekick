@@ -4,7 +4,7 @@ from sidekick.vm import vmware
 workstation = True
 
 if workstation:
-    conntype = vmware.VIX_SERVICEPROVIDER_VMWARE_WORKSTATION
+    conntype = vmware.VIX_SERVICEPROVIDER_VMWARE_PLAYER #_WORKSTATION
     hostname = ""
     hostport = 0
     username = ""
