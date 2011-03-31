@@ -1,17 +1,10 @@
-import sys, optparse
+from sidekick.command import Command, CommandType
 
-def cmd_up(args):
+class Up(Command):
     pass
 
-def cmd_down(args):
+class Down(Command):
     pass
-
-
-commands = {
-    "up": cmd_up,
-    "down": cmd_down,
-    }
-
 
 def main():
     if len(sys.argv) < 2:
@@ -19,9 +12,9 @@ def main():
         sys.exit(1)
 
     command = sys.argv[1]
-    if not command in commands:
+    if not command in CommandType.commands:
         print "Unknown subcommand; %s" % cmd
         sys.exit(1)
 
-    commands[command](sys.argv[2:])
+    CommandType.commands[command](sys.argv[2:])
 
