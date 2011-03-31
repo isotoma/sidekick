@@ -1,4 +1,7 @@
 
+from sidekick.project import Project
+
+
 class CommandType(type):
 
     commands = {}
@@ -21,4 +24,12 @@ class Command(object):
 
     def do(self):
         raise NotImplementedError
+
+
+class ProjectCommand(object):
+
+    """ A command that access project information from the Sidekick file """
+
+    def __init__(self):
+        self.project = Project()
 

@@ -1,10 +1,13 @@
 import sys
-from sidekick.command import Command, CommandType
+from sidekick.command import ProjectComamnd, Command, CommandType
 
-class Up(Command):
+class Init(Command):
     pass
 
-class Down(Command):
+class Up(ProjectCommand):
+    pass
+
+class Down(ProjectCommand):
     pass
 
 def main():

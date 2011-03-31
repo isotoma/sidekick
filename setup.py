@@ -20,6 +20,7 @@ setup(name='Sidekick',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'yay',
       ],
       extras_require = {
           'test': ['testtools', 'discover', 'mock'],
