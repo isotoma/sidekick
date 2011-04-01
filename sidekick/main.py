@@ -20,5 +20,5 @@ def main():
         print "Unknown subcommand; %s" % cmd
         sys.exit(1)
 
-    CommandType.commands[command]().do(sys.argv[2:])
+    CommandType.commands[command](sys.argv[2:]).do()
 

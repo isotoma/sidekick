@@ -22,6 +22,9 @@ class Command(object):
 
     __metaclass__ = CommandType
 
+    def __init__(self, args):
+        self.args = args
+
     def do(self):
         raise NotImplementedError
 
@@ -30,6 +33,7 @@ class ProjectCommand(Command):
 
     """ A command that access project information from the Sidekick file """
 
-    def __init__(self):
+    def __init__(self, args):
+        super(ProjectCommand, self).__init__(args)
         self.project = Project()
 
