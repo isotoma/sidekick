@@ -1,14 +1,7 @@
 import sys
-from sidekick.command import ProjectCommand, Command, CommandType
+from sidekick import commands
+from sidekick.command import CommandType
 
-class Init(Command):
-    name = "init"
-
-class Up(ProjectCommand):
-    name = "up"
-
-class Down(ProjectCommand):
-    name = "down"
 
 def main():
     if len(sys.argv) < 2:
