@@ -1,4 +1,4 @@
-from ctypes import byref, c_str
+from ctypes import byref, create_string_buffer
 from sidekick.vm.vmware import low, errors
 
 class Job(object):
@@ -78,7 +78,7 @@ class VirtualMachine(object):
         if not self.vm:
             self.connect()
 
-        ip = c_str()
+        ip = create_string_buffer(16)
         job = Job(low.vix.VixVM_ReadVariable(self.vm, low.VIX_VM_GUEST_VARIABLE, "ip", 0, None, None))
         job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, ip)
 
