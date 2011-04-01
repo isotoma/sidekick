@@ -6,7 +6,7 @@ This is still a grey area of the API and may become part of a base class for the
 continue to wrap it.
 """
 
-import time
+import os, time
 
 from sidekick import errors
 from sidekick.vm.vmware import WorkstationProvider, PlayerProvider
@@ -31,7 +31,7 @@ class Machine(object):
 
         if not os.path.exists(self.config.get("path")):
             base = p.open(self.config.get("base"))
-            base.clone(path)
+            base.clone(self.config.get("path"))
 
         self.vm = p.open(self.config.get("path"))
 
