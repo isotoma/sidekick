@@ -1,4 +1,4 @@
-from ctypes import byref
+from ctypes import byref, c_str
 from sidekick.vm.vmware import low, errors
 
 class Job(object):
@@ -73,6 +73,16 @@ class VirtualMachine(object):
         self.path = path
         self.vm = None
         self.default_powerop_start = default_powerop_start
+
+    def get_ip(self):
+        if not self.vm:
+            self.connect()
+
+        ip = c_str()
+        job = Job(low.vix.VixVM_ReadVariable(self.vm, low.VIX_VM_GUEST_VARIABLE, "ip", 0, None, None))
+        job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, ip)
+
+        return ip.value
 
     def get_powerstate(self):
         if not self.vm:
