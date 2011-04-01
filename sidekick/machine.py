@@ -29,6 +29,10 @@ class Machine(object):
             except WRAPPER_PLAYER_NOT_INSTALLED:
                 raise RuntimeError("Cannot find VM Environment")
 
+        if not os.path.exists(self.config.get("path")):
+            base = p.open(self.config.get("base"))
+            base.clone(path)
+
         self.vm = p.open(self.config.get("path"))
 
     def approaching(self, desired_state):
