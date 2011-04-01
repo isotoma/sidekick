@@ -7,4 +7,6 @@ class Up(ProjectCommand):
     def do(self):
         for vm in self.project.all_vms():
             vm.start()
+            vm.provision()
+
 
