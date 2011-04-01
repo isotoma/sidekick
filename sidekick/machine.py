@@ -1,4 +1,11 @@
 
+"""
+Tooling for working with a VM that is common accross multiple commands and multiple VM environments.
+
+This is still a grey area of the API and may become part of a base class for the vm module or it might
+continue to wrap it.
+"""
+
 from sidekick.vm.vmware import WorkstationProvider, PlayerProvider
 from sidekick.vm.vmware.errors import WRAPPER_WORKSTATION_NOT_INSTALLED, WRAPPER_PLAYER_NOT_INSTALLED
 
