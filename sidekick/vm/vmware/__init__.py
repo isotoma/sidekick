@@ -75,8 +75,14 @@ class VirtualMachine(object):
         self.default_powerop_start = default_powerop_start
 
     def get_powerstate(self):
+        if not self.vm:
+            self.connect()
+
         powerstate = low.VixPowerState()
-        low.vix.Vix_GetProperties(self.host, low.VIX_PROPERTY_VM_POWER_STATE, byref(powerstate), low.VIX_PROPERTY_NONE)
+        err = low.vix.Vix_GetProperties(self.vm, low.VIX_PROPERTY_VM_POWER_STATE, byref(powerstate), low.VIX_PROPERTY_NONE)
+        if err != low.VIX_OK:
+            raise errors.ErrorType.get(err)
+
         powerstate = powerstate.value
 
         if powerstate & low.VIX_POWERSTATE_POWERED_ON:
@@ -89,8 +95,14 @@ class VirtualMachine(object):
             return "powering-off"
         elif powerstate & low.VIX_POWERSTATE_POWERED_OFF:
             return "off"
+        elif powerstate & low.VIX_POWERSTATE_SUSPENDING:
+            return "powering-off"
+        elif powerstate & low.VIX_POWERSTATE_SUSPENDED:
+            return "off"
+        elif powerstate & low.VIX_POWERSTATE_RESETTING:
+            return "powering-on"
         else:
-            return "meh-fixme"
+            return "meh-fixme, %d" % powerstate
 
     def open(self):
         job = Job(low.vix.VixVM_Open(self.host, self.path, None, None))

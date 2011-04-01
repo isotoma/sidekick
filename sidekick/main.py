@@ -14,4 +14,4 @@ def main():
         sys.exit(1)
 
     CommandType.commands[command](sys.argv[2:]).do()
-
+    print "done."

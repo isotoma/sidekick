@@ -6,6 +6,8 @@ This is still a grey area of the API and may become part of a base class for the
 continue to wrap it.
 """
 
+import time
+
 from sidekick import errors
 from sidekick.vm.vmware import WorkstationProvider, PlayerProvider
 from sidekick.vm.vmware.errors import WRAPPER_WORKSTATION_NOT_INSTALLED, WRAPPER_PLAYER_NOT_INSTALLED
@@ -29,10 +31,24 @@ class Machine(object):
 
         self.vm = p.open(self.config.get("path"))
 
+    def approaching(self, desired_state):
+        if desired_state == "running":
+            if self.vm.get_powerstate() in ("running", "nearly-running", "booting"):
+                return True
+            return False
+
     def is_running(self):
         if not self.vm:
             self.connect()
         return self.vm.get_powerstate() == "running"
+
+    def wait_for_boot(self):
+        if self.approaching("running"):
+            while not self.is_running():
+                print "Waiting for boot..."
+                time.sleep(5)
+        else:
+            print self.vm.get_powerstate()
 
     def power_on(self):
         if not self.vm:
@@ -42,10 +58,13 @@ class Machine(object):
             raise errors.VmAlreadyRunning()
 
         self.vm.power_on()
+        self.wait_for_boot()
 
     def provision(self):
         if not self.is_running():
             raise errors.VmNotRunning()
+
+        print "Provisioning vm..."
 
         # DO YAYBU STUFF HERE
 
@@ -56,4 +75,6 @@ class Machine(object):
         if not self.is_running:
             raise errors.VmNotRunning()
 
+        print "Powering off..."
         self.vm.power_off()
+
