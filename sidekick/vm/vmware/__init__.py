@@ -1,5 +1,5 @@
 from ctypes import byref
-from sidekick.vm.vmware import low
+from sidekick.vm.vmware import low, errors
 
 class Job(object):
     """ I am a proxy for an uncompleted vmware function call """
@@ -10,7 +10,7 @@ class Job(object):
     def wait(self, *properties):
         err = low.vix.VixJob_Wait(self.handle, *properties)
         if err != low.VIX_OK:
-            raise ValueError(err)
+            raise errors.ErrorType.get(err)
         low.vix.Vix_ReleaseHandle(self.handle)
 
 
