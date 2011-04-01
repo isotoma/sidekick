@@ -1,4 +1,6 @@
+import os, shutil
 from ctypes import byref, create_string_buffer
+
 from sidekick.vm.vmware import low, errors
 
 class Job(object):
@@ -139,7 +141,18 @@ class VirtualMachine(object):
         low.vix.Vix_ReleaseHandle(snapshot)
 
     def _manual_clone(self, path):
-        pass
+        src_path = os.path.dirname(self.path)
+        target_path = os.path.dirname(path)
+        target_container = os.path.dirname(target_path)
+
+        if not os.path.exists(target_container):
+             os.makedirs(target_container)
+
+        shutil.copytree(src_path, target_path)
+
+        # Mutate VMX file...
+        os.rename(os.path.join(target_path, os.path.basename(self.path)),
+            os.path.join(target_path, os.path.basename(path)))
 
     def clone(self, path):
         try:
