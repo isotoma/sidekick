@@ -1,5 +1,5 @@
 import os, shutil
-from ctypes import byref, create_string_buffer
+from ctypes import byref, string_at, c_char_p #, create_string_buffer
 
 from sidekick.vm.vmware import low, errors
 
@@ -80,11 +80,11 @@ class VirtualMachine(object):
         if not self.vm:
             self.connect()
 
-        ip = create_string_buffer(16)
+        ip = c_char_p()
         job = Job(low.vix.VixVM_ReadVariable(self.vm, low.VIX_VM_GUEST_VARIABLE, "ip", 0, None, None))
-        job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, ip)
+        job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, byref(ip), low.VIX_PROPERTY_NONE)
 
-        return ip.value
+        return string_at(ip)
 
     def get_powerstate(self):
         if not self.vm:

@@ -70,6 +70,7 @@ class Machine(object):
             raise errors.VmNotRunning()
 
         print "Provisioning vm..."
+        print self.vm.get_ip()
 
         # DO YAYBU STUFF HERE
 
