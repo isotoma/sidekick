@@ -9,8 +9,8 @@ class CommandType(type):
     def __new__(meta, class_name, bases, new_attrs):
         cls = type.__new__(meta, class_name, bases, new_attrs)
 
-        if class_name != 'Command':
-            command = new_attrs.get("name", class_name.lower())
+        command = new_attrs.get("name", None)
+        if command:
             if command in meta.commands:
                 raise RuntimeError("Command '%s' was already defined")
             meta.commands[command] = cls
@@ -26,7 +26,7 @@ class Command(object):
         raise NotImplementedError
 
 
-class ProjectCommand(object):
+class ProjectCommand(Command):
 
     """ A command that access project information from the Sidekick file """
 

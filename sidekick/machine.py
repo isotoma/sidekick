@@ -1,7 +1,4 @@
 
-import yay
-
-from sidekick.machine import Machine
 
 class Machine(object):
 
