@@ -117,6 +117,17 @@ class VirtualMachine(object):
         job = Job(low.vix.VixVM_PowerOff(self.vm, low.VIX_VMPOWEROP_NORMAL, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
 
+    def clone(self, path):
+        snapshot = low.VixHandle()
+        err = low.vix.VixVM_GetCurrentSnapshot(self.vm, byref(snapshot))
+        if err != low.VIX_OK:
+            raise errors.ErrorType.get(err)
+
+        job = Job(low.vix.VixVM_Clone(self.vm, snapshot, low.VIX_CLONETYPE_LINKED, path, 0, low.VIX_INVALID_HANDLE, None, None))
+        job.wait(low.VIX_PROPERTY_NONE)
+
+        low.vix.Vix_ReleaseHandle(snapshot)
+
     def release(self):
         low.vix.Vix_ReleaseHandle(self.vm)
         self.vm = None
