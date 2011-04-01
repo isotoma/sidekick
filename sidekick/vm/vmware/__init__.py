@@ -21,6 +21,7 @@ class Provider(object):
     hostport = 0
     username = ""
     password = ""
+    default_powerop_start = low.VIX_VMPOWEROP_LAUNCH_GUI
 
     def __init__(self):
         self.handle = None
@@ -41,7 +42,7 @@ class Provider(object):
             self.handle = None
 
     def open(self, vmx):
-        vm = VirtualMachine(self.handle, vmx)
+        vm = VirtualMachine(self.handle, vmx, default_powerop_start=self.default_powerop_start)
         vm.open()
         return vm
 
@@ -55,6 +56,8 @@ class PlayerProvider(Provider):
 
 
 class ViServerProvider(Provider):
+    default_powerop_start = low.VIX_VMPOWEROP_NORMAL
+
     def __init__(self, hostname, username, password, hostport=0):
         self.hostname = hostname
         self.hostport = hostport
@@ -65,10 +68,29 @@ class ViServerProvider(Provider):
 
 class VirtualMachine(object):
 
-    def __init__(self, host, path):
+    def __init__(self, host, path, default_powerop_start=low.VIX_VMPOWEROP_NORMAL):
         self.host = host
         self.path = path
         self.vm = None
+        self.default_powerop_start = default_powerop_start
+
+    def get_powerstate(self):
+        powerstate = low.VixPowerState()
+        low.vix.Vix_GetProperties(self.host, low.VIX_PROPERTY_VM_POWER_STATE, byref(powerstate), low.VIX_PROPERTY_NONE)
+        powerstate = powerstate.value
+
+        if powerstate & low.VIX_POWERSTATE_POWERED_ON:
+            if powerstate & low.VIX_POWERSTATE_TOOLS_RUNNING:
+                return "running"
+            return "nearly-running"
+        elif powerstate & low.VIX_POWERSTATE_POWERING_ON:
+            return "powering-on"
+        elif powerstate & low.VIX_POWERSTATE_POWERING_OFF:
+            return "powering-off"
+        elif powerstate & low.VIX_POWERSTATE_POWERED_OFF:
+            return "off"
+        else:
+            return "meh-fixme"
 
     def open(self):
         job = Job(low.vix.VixVM_Open(self.host, self.path, None, None))
@@ -76,7 +98,7 @@ class VirtualMachine(object):
         job.wait(low.VIX_PROPERTY_JOB_RESULT_HANDLE, byref(self.vm), low.VIX_PROPERTY_NONE)
 
     def power_on(self):
-        job = Job(low.vix.VixVM_PowerOn(self.vm, low.VIX_VMPOWEROP_NORMAL, low.VIX_INVALID_HANDLE, None, None))
+        job = Job(low.vix.VixVM_PowerOn(self.vm, self.default_powerop_start, low.VIX_INVALID_HANDLE, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
 
     def power_off(self):

@@ -6,7 +6,7 @@ class Up(ProjectCommand):
 
     def do(self):
         for vm in self.project.all_vms():
-            vm.start()
+            vm.power_on()
             vm.provision()
 
 

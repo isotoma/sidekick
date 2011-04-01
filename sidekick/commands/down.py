@@ -5,6 +5,6 @@ class Down(ProjectCommand):
     name = "down"
 
     def do(self):
-        for vm in self.all_vms():
-            vm.stop()
+        for vm in self.project.all_vms():
+            vm.power_off()
 

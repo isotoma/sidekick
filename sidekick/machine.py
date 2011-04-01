@@ -14,6 +14,7 @@ class Machine(object):
 
     def __init__(self, config):
         self.config = config
+        self.vm = None
 
     def connect(self):
         try:
@@ -26,7 +27,12 @@ class Machine(object):
             except WRAPPER_PLAYER_NOT_INSTALLED:
                 raise RuntimeError("Cannot find VM Environment")
 
-        vm = p.open(self.config.get("path"))
+        self.vm = p.open(self.config.get("path"))
+
+    def is_running(self):
+        if not self.vm:
+            self.connect()
+        return self.vm.get_powerstate() == "running"
 
     def power_on(self):
         if not self.vm:
@@ -45,7 +51,9 @@ class Machine(object):
 
     def power_off(self):
         if not self.vm:
+            self.connect()
+
+        if not self.is_running:
             raise errors.VmNotRunning()
 
         self.vm.power_off()
-        self.vm = None
