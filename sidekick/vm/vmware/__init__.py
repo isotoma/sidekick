@@ -121,6 +121,36 @@ class VirtualMachine(object):
         self.vm = low.VixHandle()
         job.wait(low.VIX_PROPERTY_JOB_RESULT_HANDLE, byref(self.vm), low.VIX_PROPERTY_NONE)
 
+    def put(self, path, data, chmod=None):
+        self.ensure_logged_in()
+
+        job = Job(low.vix.VixVM_CopyFileFromHostToGuest(self.vm, src_path, path, 0, low.VIX_INVALID_HANDLE, None, None))
+        job.wait(low.VIX_PROPERTY_NONE)
+
+    def run(self, *args):
+        self.ensure_logged_in()
+
+        exit_code = c_int()
+        job = Job(low.vix.VixVM_RunProgramInGuest(self.vm, args[0], " ".join(args[1:], 0, low.VIX_INVALID_HANDLE, None, None)))
+        job.wait(low.VIX_PROPERTY_JOB_RESULT_GUEST_PROGRAM_EXIT_CODE, byref(exit_code), low.VIX_PROPERTY_NONE)
+
+        return exit_code.value
+
+    def run_script(self, script, interpreter="/bin/sh"):
+        self.ensure_logged_in()
+
+        exit_code = c_int()
+        job = Job(low.vix.VixVM_RunScriptIntGuest(self.vm, interpreter, script, 0, low.VIX_INVALID_HANDLE, None, None))
+        job.wait(low.VIX_PROPERTY_JOB_RESULT_GUEST_PROGRAM_EXIT_CODE, byref(exit_code), low.VIX_PROPERTY_NONE)
+
+        return exit_code.value
+
+    def delete(self, path):
+        self.ensured_logged_in()
+
+        job = Job(low.vix.VixVM_DeleteFileInGuest(self.vm, path, None, None))
+        job.wait(low.VIX_PROPERTY_NONE)
+
     def power_on(self):
         job = Job(low.vix.VixVM_PowerOn(self.vm, self.default_powerop_start, low.VIX_INVALID_HANDLE, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
