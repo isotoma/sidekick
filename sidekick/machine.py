@@ -55,6 +55,14 @@ class Machine(object):
         else:
             print self.vm.get_powerstate()
 
+    def wait_for_ip(self):
+        ip = None
+        while not ip:
+            print "Waiting for ip..."
+            ip = self.vm.get_ip()
+            time.sleep(5)
+        return ip
+
     def power_on(self):
         if not self.vm:
             self.connect()
@@ -64,6 +72,7 @@ class Machine(object):
 
         self.vm.power_on()
         self.wait_for_boot()
+        self.wait_for_ip()
 
     def provision(self):
         if not self.is_running():
