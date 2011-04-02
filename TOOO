@@ -1,0 +1,36 @@
+
+~/.sidekick
+    base/
+    instances/
+        some_kind_of_link_to_proj_dir
+
+
+Commands to implement
+=====================
+
+status
+~~~~~~
+
+Cross project view of known projects
+Implies a need to be able to unregister them?
+
+provision (or deploy?)
+~~~~~~~~~~~~~~~~~~~~~~
+
+Run yaybu (or shell script)
+VM already running
+
+
+Bases
+=====
+
+Use vmbuilder + yaybu to build yaybu-friendly base images
+
+
+Other stuff
+===========
+
+ * Shared folders
+ * SMB
+
+
