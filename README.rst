@@ -30,7 +30,7 @@ it will be useful.
 It currently targets:
 
   * VMWare
-  * Yabyu
+  * Yaybu
 
 It may gain support for:
 
