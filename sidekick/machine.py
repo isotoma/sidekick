@@ -63,6 +63,11 @@ class Machine(object):
             time.sleep(5)
         return ip
 
+    def get_ip(self):
+        if not self.vm:
+            self.connect()
+        return self.vm.get_ip()
+
     def power_on(self):
         if not self.vm:
             self.connect()

@@ -1,4 +1,6 @@
+import os
 
+from sidekick import errors
 from sidekick.command import ProjectCommand
 
 class Ssh(ProjectCommand):
@@ -11,10 +13,10 @@ class Ssh(ProjectCommand):
         #  - if there is only 1 defined and the name is specified it
         #    must be right
         vms = self.project.all_vms()
-        vm = vms[0]
+        vm = list(vms)[0]
 
-        if not vm.is_running():
-            raise errors.VmNotRunning()
+        #if not vm.is_running():
+        #    raise errors.VmNotRunning()
 
         command = ["ssh", "-A"]
 
@@ -23,6 +25,6 @@ class Ssh(ProjectCommand):
 
         command.append(vm.get_ip())
 
-        os.spawnvp(os.P_OVERLAY, "ssh", command)
+        os.execv("/usr/bin/ssh", command)
 
 
