@@ -20,12 +20,17 @@ provision (or deploy?)
 Run yaybu (or shell script)
 VM already running
 
+ssh
+~~~
+
+SSH into VM. On linux this will replace sidekick process with ssh seamlessly.
+
 
 Bases
 =====
 
 Use vmbuilder + yaybu to build yaybu-friendly base images
-
+Download (with progress bar) for pre-made images
 
 Other stuff
 ===========
