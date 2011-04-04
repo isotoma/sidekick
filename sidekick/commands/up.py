@@ -2,6 +2,9 @@
 from sidekick.command import ProjectCommand
 
 class Up(ProjectCommand):
+
+    """ Activate all environments for this project """
+
     name = "up"
 
     def do(self):

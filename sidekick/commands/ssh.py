@@ -4,6 +4,9 @@ from sidekick import errors
 from sidekick.command import ProjectCommand
 
 class Ssh(ProjectCommand):
+
+    """ SSH into an environent """
+
     name = "ssh"
 
     def do(self):

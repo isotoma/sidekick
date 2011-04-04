@@ -2,6 +2,9 @@
 from sidekick.command import ProjectCommand
 
 class Down(ProjectCommand):
+
+    """ Shutdown any active environment for this project """
+
     name = "down"
 
     def do(self):

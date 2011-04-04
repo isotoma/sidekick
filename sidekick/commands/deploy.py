@@ -3,6 +3,8 @@ from sidekick.command import ProjectCommand
 
 class Deploy(ProjectCommand):
 
+    """ Deploy the latest environment configuration. """
+
     name = "deploy"
 
     def do(self):
