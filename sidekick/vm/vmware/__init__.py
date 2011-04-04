@@ -161,10 +161,11 @@ class VirtualMachine(object):
 
     def _native_clone(self, path):
         snapshot = low.VixHandle()
-        err = low.vix.VixVM_GetCurrentSnapshot(self.vm, byref(snapshot))
-        if err != low.VIX_OK:
-            raise errors.ErrorType.get(err)
+        #err = low.vix.VixVM_GetCurrentSnapshot(self.vm, byref(snapshot))
+        #if err != low.VIX_OK:
+        #    raise errors.ErrorType.get(err)
 
+        snapshot = low.VIX_INVALID_HANDLE
         job = Job(low.vix.VixVM_Clone(self.vm, snapshot, low.VIX_CLONETYPE_LINKED, path, 0, low.VIX_INVALID_HANDLE, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
 
