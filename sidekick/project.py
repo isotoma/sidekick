@@ -15,6 +15,6 @@ class Project(object):
         self.config = yay.load_uri("Sidekick")
 
     def all_vms(self):
-        for vm in self.config.get("vms", []):
+        for vm in self.config.get("environments", []):
             yield Machine(vm)
 
