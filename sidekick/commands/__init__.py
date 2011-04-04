@@ -1,7 +1,9 @@
 from sidekick.commands import (
+    buildbase,
+    deploy,
     down,
     init,
-    up,
     ssh,
+    up,
     )
 
