@@ -14,8 +14,9 @@ from sidekick.vm.vmware.errors import WRAPPER_WORKSTATION_NOT_INSTALLED, WRAPPER
 
 class Machine(object):
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, project, config):
+        self.project = project
+        self.config = vm_config
         self.vm = None
 
     def connect(self):
@@ -84,9 +85,22 @@ class Machine(object):
             raise errors.VmNotRunning()
 
         print "Provisioning vm..."
-        print self.vm.get_ip()
 
-        # DO YAYBU STUFF HERE
+        p = None
+        if "provisioner" in self.project.config:
+            try:
+                p = ProvisionerType.provisioner[self.project.config["provisioner"]]
+            except KeyError:
+                raise RuntimeError("There is no such provisioner: '%s'" % self.project.config["provisioner"])
+        else:
+            for p in ProvisionerType.provisioner.items():
+                if p.can_provision(self):
+                    break
+            else:
+                raise RuntimeError("Cannot find a suitable provisioner")
+
+        # Actually do this thing
+        p(self).provision()
 
     def power_off(self):
         if not self.vm:

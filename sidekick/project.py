@@ -16,5 +16,5 @@ class Project(object):
 
     def all_vms(self):
         for vm in self.config.get("environments", []):
-            yield Machine(vm)
+            yield Machine(self, vm)
 

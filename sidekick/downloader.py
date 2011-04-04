@@ -58,6 +58,6 @@ if __name__ == "__main__":
     #    i = i+2
     #p.finish()
 
-    d = Download("http://archive.ubuntu.com/ubuntu/pool/main/h/hello/hello_2.5.orig.tar.gz", "/Users/john/hello.test")
+    d = Download("http://archive.ubuntu.com/ubuntu/pool/main/h/hello/hello_2.5.orig.tar.gz", "/home/john/hello.test")
     d.download()
 
