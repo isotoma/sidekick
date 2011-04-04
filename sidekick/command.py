@@ -1,4 +1,6 @@
 
+import sys, optparse
+
 from sidekick.registry import Registry
 from sidekick.project import Project
 
@@ -24,8 +26,21 @@ class Command(object):
     __metaclass__ = CommandType
 
     def __init__(self, args):
-        self.args = args
+        p = optparse.OptionParser()
+
+        # Set default optparse settings
+        p.prog = " ".join((sys.argv[0], self.name))
+        p.description = self.__doc__
+
+        # Allow subclass to define its own options
+        self.setup_optparse(p)
+
+        self.options, self.args = p.parse_args(args)
+
         self.registry = Registry()
+
+    def setup_optparse(self, p):
+        pass
 
     def do(self):
         raise NotImplementedError

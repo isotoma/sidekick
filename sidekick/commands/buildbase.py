@@ -72,7 +72,7 @@ class BuildBase(Command):
         }
 
     def setup_optparse(self, p):
-        p.add_option("-h", "--hypervisor", action="store", default="vmw6")
+        p.add_option("-H", "--hypervisor", action="store", default="vmw6")
         p.add_option("-s", "--suite", action="store", default="lucid")
 
     def do(self):
