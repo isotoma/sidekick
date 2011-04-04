@@ -1,4 +1,5 @@
 
+from sidekick.registry import Registry
 from sidekick.project import Project
 
 
@@ -24,6 +25,7 @@ class Command(object):
 
     def __init__(self, args):
         self.args = args
+        self.registry = Registry()
 
     def do(self):
         raise NotImplementedError
