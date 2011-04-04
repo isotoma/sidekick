@@ -52,9 +52,7 @@ HERE
 
 class BuildBase(Command):
 
-    """
-    Build a base VM using the ubuntu-vm-builder tool
-    """
+    """ Build a base VM using the ubuntu-vm-builder tool """
 
     name = "buildbase"
 
@@ -91,7 +89,7 @@ class BuildBase(Command):
 
     def prepare_execscript(self):
         f = tempfile.NamedTemporaryFile(delete=False, prefix="/var/tmp/")
-        print >>f, self.postboot % {
+        print >>f, postboot % {
             }
         f.close()
         os.chmod(f.name, 0755)
