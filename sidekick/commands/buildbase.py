@@ -10,6 +10,15 @@ postboot = """\
 # Add an admin user
 chroot $1 adduser --ingroup admin sidekick
 
+# Give the admin user an ssh folder
+chroot $1 mkdir -p /home/sidekick/.ssh
+chroot $1 chown sidekick /home/sidekick/.ssh
+chroot $1 chmod 700 /home/sidekick/.ssh
+
+# With a specific SSH key
+cp %(authorized_keys)s $1/home/sidekick/.ssh/authorized_keys
+chroot $1 chown sidekick /home/sidekick/.ssh/authorized_keys
+
 # This is a workaround for KVM vm's and virtio.....
 # cat > $1/etc/udev/rules.d/virtio.rules << HERE
 # KERNEL=="vda*", SYMLINK+="sda%%n"
@@ -70,6 +79,7 @@ class BuildBase(Command):
         }
 
     def setup_optparse(self, p):
+        p.add_option("-k", "--authorized-keys", action="store", default=os.path.expanduser("~/.ssh/id_rsa.pub"))
         p.add_option("-H", "--hypervisor", action="store", default="vmw6")
         p.add_option("-s", "--suite", action="store", default="lucid")
 
@@ -90,6 +100,7 @@ class BuildBase(Command):
     def prepare_execscript(self):
         f = tempfile.NamedTemporaryFile(delete=False, prefix="/var/tmp/")
         print >>f, postboot % {
+            "authorized_keys": self.options.authorized_keys,
             }
         f.close()
         os.chmod(f.name, 0755)
