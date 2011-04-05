@@ -3,6 +3,8 @@ from sidekick.provisioner import Provisioner
 
 class ShellProvisioner(Provisioner):
 
+    name = "shell"
+
     @staticmethod
     def can_provision(machine):
         if "script" in machine.config:

@@ -8,7 +8,7 @@ class ProvisionerType(type):
         cls = type.__new__(meta, name, bases, new_attrs)
 
         if "name" in new_attrs:
-            meta.provisionsers[new_attrs["name"]] = cls
+            meta.provisioners[new_attrs["name"]] = cls
 
         return cls
 

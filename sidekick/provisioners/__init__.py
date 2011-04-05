@@ -1,4 +1,4 @@
 from sidekick.provisioners import (
-    yaybu,
+    yb,
     shell,
     )

@@ -99,7 +99,7 @@ class Machine(object):
             except KeyError:
                 raise RuntimeError("There is no such provisioner: '%s'" % self.project.config["provisioner"])
         else:
-            for p in ProvisionerType.provisioners.items():
+            for p in ProvisionerType.provisioners.values():
                 if p.can_provision(self):
                     break
             else:
