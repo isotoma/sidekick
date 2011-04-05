@@ -74,7 +74,7 @@ class BuildBase(Command):
         "lang": "en_GB.UTF-8",
         "timezone": "Europe/London",
         "addpkg": [
-            "standard^", "server^", "gpgv", "openssh-server", "sudo",
+            "standard^", "server^", "gpgv", "openssh-server", "sudo", "dhcp3-client",
             ],
         }
 

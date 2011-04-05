@@ -12,11 +12,14 @@ from sidekick import errors
 from sidekick.vm.vmware import WorkstationProvider, PlayerProvider
 from sidekick.vm.vmware.errors import WRAPPER_WORKSTATION_NOT_INSTALLED, WRAPPER_PLAYER_NOT_INSTALLED
 
+from sidekick.provisioner import ProvisionerType
+import sidekick.provisioners
+
 class Machine(object):
 
     def __init__(self, project, config):
         self.project = project
-        self.config = vm_config
+        self.config = config
         self.vm = None
 
     def connect(self):
@@ -81,19 +84,22 @@ class Machine(object):
         self.wait_for_ip()
 
     def provision(self):
-        if not self.is_running():
-            raise errors.VmNotRunning()
+        if not self.vm:
+            self.connect()
+
+        #if not self.is_running():
+        #    raise errors.VmNotRunning()
 
         print "Provisioning vm..."
 
         p = None
         if "provisioner" in self.project.config:
             try:
-                p = ProvisionerType.provisioner[self.project.config["provisioner"]]
+                p = ProvisionerType.provisioners[self.project.config["provisioner"]]
             except KeyError:
                 raise RuntimeError("There is no such provisioner: '%s'" % self.project.config["provisioner"])
         else:
-            for p in ProvisionerType.provisioner.items():
+            for p in ProvisionerType.provisioners.items():
                 if p.can_provision(self):
                     break
             else:

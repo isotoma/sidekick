@@ -1,6 +1,6 @@
 
 
-class ProvisionerType(object):
+class ProvisionerType(type):
 
     provisioners = {}
 
