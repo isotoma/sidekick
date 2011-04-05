@@ -78,10 +78,12 @@ class BuildBase(Command):
             ],
         }
 
-    def setup_optparse(self, p):
+    def setup_optparse(self, p, a):
         p.add_option("-k", "--authorized-keys", action="store", default=os.path.expanduser("~/.ssh/id_rsa.pub"))
         p.add_option("-H", "--hypervisor", action="store", default="vmw6")
         p.add_option("-s", "--suite", action="store", default="lucid")
+
+        a.append("destdir")
 
     def do(self):
         self.vmb_options = self.defaults.copy()

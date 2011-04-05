@@ -33,13 +33,19 @@ class Command(object):
         p.description = self.__doc__
 
         # Allow subclass to define its own options
-        self.setup_optparse(p)
+        expected_args = []
+        self.setup_optparse(p, expected_args)
+
+        p.usage = " ".join(["%prog", "[options]"] + expected_args)
 
         self.options, self.args = p.parse_args(args)
 
+        if len(self.args) != len(expected_args):
+            print p.error("Expected %d arguments, but got %d" % (len(expected_args), len(self.args)))
+
         self.registry = Registry()
 
-    def setup_optparse(self, p):
+    def setup_optparse(self, p, a):
         pass
 
     def do(self):
