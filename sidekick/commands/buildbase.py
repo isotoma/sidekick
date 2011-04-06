@@ -8,7 +8,7 @@ postboot = """\
 #!/bin/sh
 
 # Add an admin user
-chroot $1 adduser --ingroup admin sidekick
+chroot $1 useradd --ingroup admin sidekick
 
 # Give the admin user an ssh folder
 chroot $1 mkdir -p /home/sidekick/.ssh
