@@ -23,17 +23,21 @@ class YaybuProvisioner(Provisioner):
         for recipe in self.machine.project.config.get("recipes", []):
             config.load_uri(recipe)
 
-        for recipe in self.machine.config.get("recipes", [])
+        for recipe in self.machine.config.get("recipes", []):
             config.load_uri(recipe)
 
-        s = StringIO.StringIO(dump(self.machine.project.config.get("yaybu", {})))
-        config.load(s)
+        yb = self.machine.project.config.get("yaybu", None)
+        if yb:
+            s = StringIO.StringIO(dump(yb))
+            conf.load(s)
 
-        s = StringIO.StringIO(dump(self.machine.config.get("yaybu", {})))
-        config.load(s)
+        yb = self.machine.config.get("yaybu", {})
+        if yb:
+            s = StringIO.StringIO(dump(yb))
+            conf.load(s)
 
         with open("foo.yay", "w") as f:
-            f.write(dump(config.get()))
+            f.write(dump(conf.get()))
 
         class opts:
             log_level = "info"
