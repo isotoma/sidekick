@@ -24,7 +24,9 @@ chroot $1 chown sidekick /home/sidekick/.ssh/authorized_keys
 # KERNEL=="vda*", SYMLINK+="sda%%n"
 # HERE
 
-# Install vmware tools...
+# Install vmware tools..
+chroot $1 apt-get install linux-headers-virtual
+chroot $1 apt-get install -y -q open-vm-dkms
 chroot $1 apt-get install -y -q --no-install-recommends open-vm-tools
 
 # Passwordless sudo
