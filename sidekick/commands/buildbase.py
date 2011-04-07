@@ -10,7 +10,7 @@ postboot = """\
 echo 1>&2 Adding sidekick user
 
 # Add an admin user
-chroot $1 useradd -G admin sidekick
+chroot $1 useradd -s /bin/bash -G admin sidekick
 
 # Give the admin user an ssh folder
 chroot $1 mkdir -p /home/sidekick/.ssh
