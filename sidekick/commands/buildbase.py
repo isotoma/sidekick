@@ -7,13 +7,17 @@ from sidekick.command import Command
 postboot = """\
 #!/bin/sh
 
+echo 1>&2 Adding sidekick user
+
 # Add an admin user
-chroot $1 useradd --ingroup admin sidekick
+chroot $1 useradd -G admin sidekick
 
 # Give the admin user an ssh folder
 chroot $1 mkdir -p /home/sidekick/.ssh
 chroot $1 chown sidekick /home/sidekick/.ssh
 chroot $1 chmod 700 /home/sidekick/.ssh
+
+echo 1>&2 Copying in authorized_keys
 
 # With a specific SSH key
 cp %(authorized_keys)s $1/home/sidekick/.ssh/authorized_keys
@@ -25,9 +29,12 @@ chroot $1 chown sidekick /home/sidekick/.ssh/authorized_keys
 # HERE
 
 # Install vmware tools..
+echo 1>&2 Installing vmware tools
 chroot $1 apt-get install -y -q linux-headers-virtual
-chroot $1 apt-get install -y -q open-vm-dkms
-chroot $1 apt-get install -y -q --no-install-recommends open-vm-tools
+chroot $1 apt-get install -y -q --no-install-recommends open-vm-dkms open-vm-tools
+chroot $1 update-rc.d open-vm-tools defaults
+
+echo 1<&2 Configuring sudo
 
 # Passwordless sudo
 cat > $1/etc/sudoers << HERE
