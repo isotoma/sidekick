@@ -15,7 +15,7 @@ chroot $1 apt-get install -y -q --no-install-recommends open-vm-dkms open-vm-too
 chroot $1 update-rc.d open-vm-tools defaults
 """
 
-postboot = """
+postboot = """\
 #!/bin/sh
 
 echo 1>&2 Adding sidekick user
