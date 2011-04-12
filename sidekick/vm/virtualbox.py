@@ -1,7 +1,8 @@
 
 from sidekick.downloader import Progress as BaseProgress
+from sidekick.vm import BaseProvider
 
-class Provider(object):
+class Provider(BaseProvider):
 
     style = None
 
