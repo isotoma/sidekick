@@ -1,4 +1,5 @@
 
+from sidekick.downloader import Progress as BaseProgress
 
 class Provider(object):
 
@@ -47,6 +48,28 @@ class WebProvider(object):
     style = None
 
 
+class Progress(BaseProgress):
+
+    def __init__(self, globl, progress_object):
+        BaseProgress.__init__(self, 100)
+        self.globl = globl
+        self.progress_object = progress_object
+
+    def do(self):
+        p = self.progress_object
+        try:
+            while not p.completed:
+                self.progress(p.percent)
+                p.waitForCompletion(100)
+                self.globl.waitForEvents(0)
+            return 1
+        except KeyboardInterrupt:
+            if p.cancelable:
+                print "Canceling..."
+                p.cancel()
+            raise
+
+
 class Session(object):
 
     def __init__(self, globl, machine):
@@ -78,6 +101,14 @@ class VirtualMachine(object):
 
     def __init__(self, provider, path, name):
         self.provider = provider
+
+        self.globl = provider.globl
+        self.mgr = self.globl.mgr
+        self.vb = self.globl.vb
+        self.const = self.globl.constants
+        self.remote = self.globl.remote
+        self.type = self.globl.type
+
         self.path = path
         self.name = name
 
@@ -103,7 +134,9 @@ class VirtualMachine(object):
         pass
 
     def power_on(self):
-        pass
+        session = self.mgr.getSessionObject(self.vb)
+        progress = vb.openRemoteSession(session, uuid, type, "")
+        Progress(self.globl, progress).do()
 
     def power_off(self):
         pass
