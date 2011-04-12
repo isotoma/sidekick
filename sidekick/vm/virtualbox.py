@@ -139,7 +139,8 @@ class VirtualMachine(object):
         Progress(self.globl, progress).do()
 
     def power_off(self):
-        pass
+        with Session(self.globl, self.machine) as s:
+            s.console.powerDown()
 
     def clone(self, path):
         pass
