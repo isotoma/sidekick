@@ -1,5 +1,5 @@
 
-from sidekick.downloader import Progress as BaseProgress
+from sidekick.progress import Progress as BaseProgress
 from sidekick.vm import BaseProvider
 
 class Provider(BaseProvider):
