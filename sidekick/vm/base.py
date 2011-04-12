@@ -14,6 +14,12 @@ class ProviderType(type):
 
         return cls
 
+    def find(self, project, config):
+        matches = []
+        for provider in self.providers.itervalues():
+            if provider.probe():
+                return provider
+
 
 class BaseProvider(object):
 

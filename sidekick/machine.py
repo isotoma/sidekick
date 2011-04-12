@@ -9,36 +9,41 @@ continue to wrap it.
 import os, time
 
 from sidekick import errors
-from sidekick.vm.vmware import WorkstationProvider, PlayerProvider
-from sidekick.vm.vmware.errors import WRAPPER_WORKSTATION_NOT_INSTALLED, WRAPPER_PLAYER_NOT_INSTALLED
-
+#from sidekick.vm.vmware import WorkstationProvider, PlayerProvider
+#from sidekick.vm.vmware.errors import WRAPPER_WORKSTATION_NOT_INSTALLED, WRAPPER_PLAYER_NOT_INSTALLED
+from sidekick.vm import ProviderType
 from sidekick.provisioner import ProvisionerType
 import sidekick.provisioners
+
 
 class Machine(object):
 
     def __init__(self, project, config):
         self.project = project
         self.config = config
-        self.vm = None
 
-    def connect(self):
-        try:
-            p = WorkstationProvider()
-            p.connect()
-        except WRAPPER_WORKSTATION_NOT_INSTALLED:
-            try:
-                p = PlayerProvider()
-                p.connect()
-            except WRAPPER_PLAYER_NOT_INSTALLED:
-                raise RuntimeError("Cannot find VM Environment")
+        providers = ProviderType.find(project)
+        if len(providers) != 1:
+            raise RuntimeError("Was hoping for 1 provider, got %d" % len(providers))
 
-        if not os.path.exists(self.config.get("path")):
-            print "VM doesnt exit - cloning..."
-            base = p.open(self.config.get("base"))
-            base.clone(self.config.get("path"))
+        self.vm = providers[0].provide()
 
-        self.vm = p.open(self.config.get("path"))
+        #try:
+        #    p = WorkstationProvider()
+        #    p.connect()
+        #except WRAPPER_WORKSTATION_NOT_INSTALLED:
+        #    try:
+        #        p = PlayerProvider()
+        #        p.connect()
+        #    except WRAPPER_PLAYER_NOT_INSTALLED:
+        #        raise RuntimeError("Cannot find VM Environment")
+
+        #if not os.path.exists(self.config.get("path")):
+        #    print "VM doesnt exit - cloning..."
+        #    base = p.open(self.config.get("base"))
+        #    base.clone(self.config.get("path"))
+
+        #self.vm = p.open(self.config.get("path"))
 
     def approaching(self, desired_state):
         if desired_state == "running":

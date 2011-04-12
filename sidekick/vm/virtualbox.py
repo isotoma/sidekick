@@ -9,6 +9,16 @@ class Provider(BaseProvider):
     def __init__(self):
         self.globl = None
 
+    @classmethod
+    def probe(cls):
+        return True
+
+    def provide(self):
+        if not self.globl:
+            self.connect()
+
+        return Machine(self, "", "lucid")
+
     def connect(self):
         cwd = os.getcwd()
         vbp = os.environ.get("VBOX_PROGRAM_PATH")
@@ -39,10 +49,6 @@ class Provider(BaseProvider):
         if self.globl:
             self.globl.deinit()
             self.globl = None
-
-    def open(self, path):
-        vm = None
-        return vm
 
 
 class WebProvider(object):
