@@ -116,8 +116,8 @@ class Session(object):
 
 class VirtualMachine(object):
 
-    self.username = "sidekick"
-    self.password = "sidekick"
+    username = "sidekick"
+    password = "sidekick"
 
     def __init__(self, provider, machine):
         self.provider = provider
@@ -162,7 +162,7 @@ class VirtualMachine(object):
         session = self.mgr.getSessionObject(self.vb)
         #progress = vb.openRemoteSession(session, uuid, type, "")
 
-        progress = self.machine.launchVMProcess(session, "gui", '')
+        progress = self.machine.launchVMProcess(session, "headless", '')
 
         Progress(self.globl, progress).do()
         session.unlockMachine()
