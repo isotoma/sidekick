@@ -1,3 +1,4 @@
+import os
 
 from sidekick.progress import Progress as BaseProgress
 from sidekick.vm import BaseProvider
@@ -17,24 +18,30 @@ class Provider(BaseProvider):
         if not self.globl:
             self.connect()
 
-        return Machine(self, "", "lucid")
+        lookfor = 'lucid'
+
+        machines = self.globl.getArray(self.vb, 'machines')
+        for machine in machines:
+            if machine.name == lookfor or machine.id == lookfor:
+                return VirtualMachine(self, machine)
 
     def connect(self):
         cwd = os.getcwd()
         vbp = os.environ.get("VBOX_PROGRAM_PATH")
         if not vbp:
-            if os.path.isfile(cwd, "VirtualBox"):
+            if os.path.isfile(os.path.join(cwd, "VirtualBox")):
                 vbp = cwd
-            if os.path.isfile(cwd, "VirtualBox.exe"):
+            if os.path.isfile(os.path.join(cwd, "VirtualBox.exe")):
                 vbp = cwd
-            os.environ["VBOX_PROGRAM_PATH"] = vbp
-            sys.path.append(os.path.join(vbp, "sdk", "installer"))
+            if vbp:
+                os.environ["VBOX_PROGRAM_PATH"] = vbp
+                sys.path.append(os.path.join(vbp, "sdk", "installer"))
 
         from vboxapi import VirtualBoxManager
 
         self.globl = VirtualBoxManager(self.style, None)
         self.mgr = self.globl.mgr
-        self.vb = self.globl.vb
+        self.vb = self.globl.vbox
         self.const = self.globl.constants
         self.remote = self.globl.remote
         self.type = self.globl.type
@@ -82,17 +89,20 @@ class Session(object):
     def __init__(self, globl, machine):
         self.globl = globl
         self.mgr = self.globl.mgr
-        self.vb = self.globl.vb
+        self.vb = self.globl.vbox
         self.const = self.globl.constants
         self.remote = self.globl.remote
         self.type = self.globl.type
 
+        self.machine = machine
+
     def __enter__(self):
         self.session = self.mgr.getSessionObject(self.vb)
-        self.vb.openExistingSession(session, self.machine.id)
+        #self.vb.openExistingSession(self.session, self.machine.id)
+        self.machine.lockMachine(self.session, self.const.LockType_Shared)
 
-        if self.session.state != self.const.SessionState_Open:
-            self.session.close()
+        if self.session.state != self.const.SessionState_Locked:
+            #self.session.close()
             self.session = None
             raise RuntimeError("Session to '%s' in wrong state: %s" % (self.macine.name, self.session.state))
 
@@ -100,24 +110,23 @@ class Session(object):
 
     def __exit__(self, *args):
         if self.session:
-            self.session.close()
+            #self.session.close()
             self.session = None
 
 
 class VirtualMachine(object):
 
-    def __init__(self, provider, path, name):
+    def __init__(self, provider, machine):
         self.provider = provider
 
         self.globl = provider.globl
         self.mgr = self.globl.mgr
-        self.vb = self.globl.vb
+        self.vb = self.globl.vbox
         self.const = self.globl.constants
         self.remote = self.globl.remote
         self.type = self.globl.type
 
-        self.path = path
-        self.name = name
+        self.machine = machine
 
     def get_ip(self):
         return ""
@@ -154,4 +163,9 @@ class VirtualMachine(object):
 
     def release(self):
         pass
+
+
+if __name__ == "__main__":
+    v = Provider().provide()
+    v.power_off()
 
