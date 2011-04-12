@@ -1,10 +1,21 @@
 
-import os, platform, tempfile
+import os, platform, tempfile, glob
 
 from sidekick.command import Command
 
+virtualbox = """
+echo 1>&2 Installing virtualbox guest additions...
+chroot $1 apt-get install -y -q linux-headers-virtual virtualbox-ose-dkms virtualbox-ose-guest-dkms virtualbox-ose-guest-utils
+"""
 
-postboot = """\
+vmware = """
+echo 1>&2 Installing vmware tools
+chroot $1 apt-get install -y -q linux-headers-virtual
+chroot $1 apt-get install -y -q --no-install-recommends open-vm-dkms open-vm-tools
+chroot $1 update-rc.d open-vm-tools defaults
+"""
+
+postboot = """
 #!/bin/sh
 
 echo 1>&2 Adding sidekick user
@@ -27,12 +38,6 @@ chroot $1 chown sidekick /home/sidekick/.ssh/authorized_keys
 # cat > $1/etc/udev/rules.d/virtio.rules << HERE
 # KERNEL=="vda*", SYMLINK+="sda%%n"
 # HERE
-
-# Install vmware tools..
-echo 1>&2 Installing vmware tools
-chroot $1 apt-get install -y -q linux-headers-virtual
-chroot $1 apt-get install -y -q --no-install-recommends open-vm-dkms open-vm-tools
-chroot $1 update-rc.d open-vm-tools defaults
 
 echo 1<&2 Configuring sudo
 
@@ -65,6 +70,7 @@ root    ALL=(ALL) ALL
 %%admin ALL=(ALL) NOPASSWD: ALL
 HERE
 
+%(hypervisor)s
 """
 
 
@@ -112,6 +118,10 @@ class BuildBase(Command):
         f = tempfile.NamedTemporaryFile(delete=False, prefix="/var/tmp/")
         print >>f, postboot % {
             "authorized_keys": self.options.authorized_keys,
+            "hypervisor": {
+                "vbox": virtualbox,
+                "vmw6": vmware,
+                }[self.options.hypervisor],
             }
         f.close()
         os.chmod(f.name, 0755)
@@ -128,8 +138,12 @@ class BuildBase(Command):
                 if v:
                     optstring.append("--%s=%s" % (k, v))
 
+        hypervisor = actual_hypervisor = self.options.hypervisor
+        if actual_hypervisor == "vbox":
+            hypervisor = "kvm"
+
         execute = "ubuntu-vm-builder %s %s -d%s %s" % (
-            self.options.hypervisor,
+            hypervisor,
             self.options.suite,
             self.args[0],
             " ".join(optstring))
@@ -140,4 +154,18 @@ class BuildBase(Command):
         print execute
         os.system(execute)
 
+        if actual_hypervisor == "vbox":
+            src_path = glob.glob(os.path.join(self.args[0], "*.qcow2"))[0]
+            bin_path = os.path.join(os.path.dirname(src_path), os.path.basename(self.args[0]) + ".bin")
+            vdi_path = os.path.join(os.path.dirname(src_path), os.path.basename(self.args[0]) + ".vdi")
+
+            commands = [
+                "qemu-img convert %s %s" % (src_path, bin_path),
+                "VBoxManage convertdd %s %s" % (bin_path, vdi_path),
+                "VBoxManage modifyvdi %s compact" % vdi_path,
+                ]
+
+            for command in commands:
+                print command
+                os.system(command)
 
