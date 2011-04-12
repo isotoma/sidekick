@@ -151,7 +151,10 @@ class VirtualMachine(object):
 
     def power_on(self):
         session = self.mgr.getSessionObject(self.vb)
-        progress = vb.openRemoteSession(session, uuid, type, "")
+        #progress = vb.openRemoteSession(session, uuid, type, "")
+
+        progress = self.machine.launchVMProcess(session, "gui", '')
+
         Progress(self.globl, progress).do()
 
     def power_off(self):
@@ -167,5 +170,6 @@ class VirtualMachine(object):
 
 if __name__ == "__main__":
     v = Provider().provide()
+    v.power_on()
     v.power_off()
 
