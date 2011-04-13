@@ -1,7 +1,7 @@
 import os
 
 from sidekick import errors
-from sidekick.command import ProjectCommand
+from sidekick.commands.base import ProjectCommand
 
 class Ssh(ProjectCommand):
 

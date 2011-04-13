@@ -1,5 +1,5 @@
 
-from sidekick.command import ProjectCommand
+from sidekick.commands.base import ProjectCommand
 
 class Deploy(ProjectCommand):
 

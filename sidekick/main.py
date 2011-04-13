@@ -1,6 +1,6 @@
 import sys
-from sidekick import commands
-from sidekick.command import CommandType
+
+from sidekick.commands import CommandType
 
 
 def main():

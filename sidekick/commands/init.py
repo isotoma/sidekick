@@ -1,5 +1,5 @@
 
-from sidekick.command import Command
+from sidekick.commands.base import Command
 
 class Init(Command):
 

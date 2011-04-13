@@ -1,11 +1,11 @@
 
 import os, platform, tempfile, glob
 
-from sidekick.command import Command
+from sidekick.commands.base import Command
 
 virtualbox = """
 echo 1>&2 Installing virtualbox guest additions...
-chroot $1 apt-get install -y -q linux-headers-virtual virtualbox-ose-dkms virtualbox-ose-guest-dkms virtualbox-ose-guest-utils
+#chroot $1 apt-get install -y -q linux-headers-virtual virtualbox-ose-dkms virtualbox-ose-guest-dkms virtualbox-ose-guest-utils
 """
 
 vmware = """
