@@ -20,6 +20,7 @@ from sidekick.vm import BaseProvider
 
 class Provider(BaseProvider):
 
+    name = "virtualbox"
     style = None
 
     def __init__(self):

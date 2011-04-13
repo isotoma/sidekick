@@ -35,11 +35,11 @@ class Machine(object):
         self.project = project
         self.config = config
 
-        providers = ProviderType.find(project)
+        providers = ProviderType.find(project, config)
         if len(providers) != 1:
             raise RuntimeError("Was hoping for 1 provider, got %d" % len(providers))
 
-        self.vm = providers[0].provide()
+        self.vm = providers[0]().provide()
 
         #try:
         #    p = WorkstationProvider()
