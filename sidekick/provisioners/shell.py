@@ -1,5 +1,5 @@
 
-from sidekick.provisioner import Provisioner
+from sidekick.provisioners.base import Provisioner
 
 class ShellProvisioner(Provisioner):
 

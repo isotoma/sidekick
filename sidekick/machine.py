@@ -12,8 +12,7 @@ from sidekick import errors
 #from sidekick.vm.vmware import WorkstationProvider, PlayerProvider
 #from sidekick.vm.vmware.errors import WRAPPER_WORKSTATION_NOT_INSTALLED, WRAPPER_PLAYER_NOT_INSTALLED
 from sidekick.vm import ProviderType
-from sidekick.provisioner import ProvisionerType
-import sidekick.provisioners
+from sidekick.provisioners import ProvisionerType
 
 
 class Machine(object):

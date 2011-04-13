@@ -1,7 +1,7 @@
 import StringIO
 from yay.config import Config, dump
 from yaybu.core.remote import RemoteRunner
-from sidekick.provisioner import Provisioner
+from sidekick.provisioners.base import Provisioner
 
 class YaybuProvisioner(Provisioner):
 
