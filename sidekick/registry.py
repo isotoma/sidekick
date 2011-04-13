@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+The registry is a user wide map of all known projects and environments.
+
+It's purpose is to be able to enumerate any active environments even if
+you don't remember what you left on, or worst.. you lost your Sidekick
+file.
+"""
 
 import os
 

@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Main entry point. Finds a Command object and hands control over to it.
+"""
 
 import sys
 
