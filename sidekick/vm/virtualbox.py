@@ -34,7 +34,7 @@ class Provider(BaseProvider):
         if not self.globl:
             self.connect()
 
-        lookfor = 'lucid'
+        lookfor = 'wonderflonium' #sigh
 
         machines = self.globl.getArray(self.vb, 'machines')
         for machine in machines:
@@ -151,7 +151,19 @@ class VirtualMachine(object):
         return ""
 
     def get_powerstate(self):
-        return "running"
+        #self.machine.state == self.const.MachineState_Aborted
+        #self.machine.state == self.const.MachineState_Saved
+        #self.machine.state == self.const.MachineState_Saving
+        #self.machine.state == self.const.MachineState_Paused
+
+        if self.machine.state == self.const.MachineState_Stopping:
+            return "powering-off"
+        if self.machine.state == self.const.MachineState_PoweredOff:
+            return "off"
+        if self.machine.state == self.const.MachineState_Starting:
+            return "powering-on"
+        if self.machine.state == "Running":
+            return "running"
 
     def open(self):
         pass
