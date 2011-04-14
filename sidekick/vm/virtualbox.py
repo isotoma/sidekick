@@ -188,12 +188,16 @@ class VirtualMachine(object):
 
     def power_on(self):
         session = self.mgr.getSessionObject(self.vb)
-        #progress = vb.openRemoteSession(session, uuid, type, "")
 
-        progress = self.machine.launchVMProcess(session, "headless", '')
+        if hasattr(self.machine, "launchVMProcess"):
+            progress = self.machine.launchVMProcess(session, "gui", '')
+        else:
+            progress = self.vb.openRemoteSession(session, self.machine.id, "gui", '')
 
         Progress(self.globl, progress).do()
-        session.unlockMachine()
+
+        if hasattr(self.machine, "unlockMachine"):
+            session.unlockMachine()
 
     def power_off(self):
         with Session(self.globl, self.machine) as s:
