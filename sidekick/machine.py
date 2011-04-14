@@ -65,8 +65,6 @@ class Machine(object):
             return False
 
     def is_running(self):
-        if not self.vm:
-            self.connect()
         return self.vm.get_powerstate() == "running"
 
     def wait_for_boot(self):
@@ -86,14 +84,9 @@ class Machine(object):
         return ip
 
     def get_ip(self):
-        if not self.vm:
-            self.connect()
         return self.vm.get_ip()
 
     def power_on(self):
-        if not self.vm:
-            self.connect()
-
         if self.is_running():
             raise errors.VmAlreadyRunning()
 
@@ -102,9 +95,6 @@ class Machine(object):
         self.wait_for_ip()
 
     def provision(self):
-        if not self.vm:
-            self.connect()
-
         #if not self.is_running():
         #    raise errors.VmNotRunning()
 
@@ -127,9 +117,6 @@ class Machine(object):
         p(self).provision()
 
     def power_off(self):
-        if not self.vm:
-            self.connect()
-
         if not self.is_running:
             raise errors.VmNotRunning()
 
