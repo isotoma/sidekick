@@ -92,7 +92,7 @@ class Machine(object):
 
         self.vm.power_on()
         self.wait_for_boot()
-        self.wait_for_ip()
+        #self.wait_for_ip()
 
     def provision(self):
         #if not self.is_running():

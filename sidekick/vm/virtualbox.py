@@ -92,11 +92,13 @@ class Progress(BaseProgress):
                 self.progress(p.percent)
                 p.waitForCompletion(100)
                 self.globl.waitForEvents(0)
+            self.finish()
             return 1
         except KeyboardInterrupt:
             if p.cancelable:
                 print "Canceling..."
                 p.cancel()
+                self.finish()
             raise
 
 
