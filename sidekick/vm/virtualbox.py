@@ -116,10 +116,14 @@ class Session(object):
 
     def __enter__(self):
         self.session = self.mgr.getSessionObject(self.vb)
-        #self.vb.openExistingSession(self.session, self.machine.id)
-        self.machine.lockMachine(self.session, self.const.LockType_Shared)
+        if hasattr(self.machine, "lockMachine"):
+            self.machine.lockMachine(self.session, self.const.LockType_Shared)
+            desired_session_state = self.const.SessionState_Locked
+        else:
+            self.vb.openExistingSession(self.session, self.machine.id)
+            desired_session_state = self.const.SessionState_Open
 
-        if self.session.state != self.const.SessionState_Locked:
+        if self.session.state != desired_session_state:
             #self.session.close()
             self.session = None
             raise RuntimeError("Session to '%s' in wrong state: %s" % (self.macine.name, self.session.state))
