@@ -205,6 +205,14 @@ class VirtualMachine(object):
         if hasattr(self.machine, "unlockMachine"):
             session.unlockMachine()
 
+    def forward_port(self, from_port, to_port):
+        adapters = self.machine.getNetworkAdapters()
+        if not adapters:
+            raise RuntimeError("This VirtualMachine has no network adapters")
+
+        name = "%s-%s" % (from_port, to_port)
+        adapters[0].natDriver.addRedirect(name, self.const.NATProtocol_TCP, "", to_port, "", from_port)
+
     def power_off(self):
         with Session(self.globl, self.machine) as s:
             s.console.powerDown()
