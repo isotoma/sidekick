@@ -30,11 +30,11 @@ class Provider(BaseProvider):
     def probe(cls):
         return True
 
-    def provide(self):
+    def provide(self, machine):
         if not self.globl:
             self.connect()
 
-        lookfor = 'wonderflonium' #sigh
+        lookfor = machine.name
 
         machines = self.globl.getArray(self.vb, 'machines')
         for machine in machines:

@@ -39,7 +39,7 @@ class Machine(object):
         if len(providers) != 1:
             raise RuntimeError("Was hoping for 1 provider, got %d" % len(providers))
 
-        self.vm = providers[0]().provide()
+        self.vm = providers[0]().provide(self)
 
         #try:
         #    p = WorkstationProvider()
@@ -57,6 +57,10 @@ class Machine(object):
         #    base.clone(self.config.get("path"))
 
         #self.vm = p.open(self.config.get("path"))
+
+    @property
+    def name(self):
+        return self.config["name"]
 
     def approaching(self, desired_state):
         if desired_state == "running":
