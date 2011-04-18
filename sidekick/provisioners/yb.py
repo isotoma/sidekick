@@ -57,7 +57,7 @@ class YaybuProvisioner(Provisioner):
         class opts:
             log_level = "info"
             logfile = "-"
-            host = self.machine.get_ip()
+            host = "%s@%s:%s" % self.machine.vm.get_ssh_details()
             user = "root"
             ypath = []
             simulate = False

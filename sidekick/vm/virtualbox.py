@@ -205,13 +205,30 @@ class VirtualMachine(object):
         if hasattr(self.machine, "unlockMachine"):
             session.unlockMachine()
 
-    def forward_port(self, from_port, to_port):
-        adapters = self.machine.getNetworkAdapters()
-        if not adapters:
-            raise RuntimeError("This VirtualMachine has no network adapters")
+    def get_ssh_details(self):
+        for from_port, to_port in self.ex_enumerate_forwarding():
+            if from_port == "22":
+                port = to_port
+                break
+        else:
+            #FIXME: Need a better port allocator
+            self.ex_forward_port(22, 2222)
+            port = 2222
+
+        return "sidekick", "localhost", port
+
+    def ex_enumerate_forwarding(self):
+        adapter = self.machine.getNetworkAdapter(0)
+        redirects = self.globl.getArray(adapter.natDriver, 'redirects')
+        for line in redirects:
+            name, proto, host_ip, host_port, guest_ip, guest_port = line.split(",")
+            yield guest_port, host_port
+
+    def ex_forward_port(self, from_port, to_port):
+        adapter = self.machine.getNetworkAdapter(0)
 
         name = "%s-%s" % (from_port, to_port)
-        adapters[0].natDriver.addRedirect(name, self.const.NATProtocol_TCP, "", to_port, "", from_port)
+        adapter.natDriver.addRedirect(name, self.const.NATProtocol_TCP, "", from_port, "", to_port)
 
     def power_off(self):
         with Session(self.globl, self.machine) as s:
