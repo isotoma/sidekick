@@ -24,13 +24,20 @@ echo 1>&2 Installing virtualbox guest additions...
 
 vmware = """
 echo 1>&2 Installing vmware tools
-chroot $1 apt-get install -y -q linux-headers-virtual
-chroot $1 apt-get install -y -q --no-install-recommends open-vm-dkms open-vm-tools
-chroot $1 update-rc.d open-vm-tools defaults
+chroot $1 apt-get install -y -q linux-headers-$(uname -r) open-vm-dkms open-vm-tools
 """
 
 postboot = """\
 #!/bin/sh
+
+echo 1>&2 Adding PPA
+cat > $1/etc/apt/sources.list.d/yaybu.list << EOF
+deb http://ppa.launchpad.net/yaybu-team/yaybu-nightly/ubuntu %(suite)s main
+deb-src http://ppa.launchpad.net/yaybu-team/yaybu-nightly/ubuntu %(suite)s main
+EOF
+chroot $1 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A899DA54
+chroot $1 apt-get update
+
 
 echo 1>&2 Adding sidekick user
 
@@ -85,6 +92,9 @@ root    ALL=(ALL) ALL
 HERE
 
 %(hypervisor)s
+
+echo Installing yaybu
+chroot $1 apt-get install -y -q rsyslog python-setuptools python-yaybu
 """
 
 
@@ -131,6 +141,7 @@ class BuildBase(Command):
     def prepare_execscript(self):
         f = tempfile.NamedTemporaryFile(delete=False, prefix="/var/tmp/")
         print >>f, postboot % {
+            "suite": self.options.suite,
             "authorized_keys": self.options.authorized_keys,
             "hypervisor": {
                 "vbox": virtualbox,
