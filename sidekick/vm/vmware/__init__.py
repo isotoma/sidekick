@@ -43,6 +43,18 @@ class Provider(object):
     def __init__(self):
         self.handle = None
 
+    @classmethod
+    def probe(cls):
+        return True
+
+    def provide(self, machine):
+        if not self.globl:
+            self.connect()
+
+        vm = VirtualMachine(self.handle, vmx, default_powerop_start=self.default_powerop_start)
+        vm.open()
+        return vm
+
     def connect(self):
         if self.conntype is None:
             raise NotImplementedError(self.conntype)
@@ -58,10 +70,6 @@ class Provider(object):
             low.vix.VixHost_Disconnect(self.handle)
             self.handle = None
 
-    def open(self, vmx):
-        vm = VirtualMachine(self.handle, vmx, default_powerop_start=self.default_powerop_start)
-        vm.open()
-        return vm
 
 
 class WorkstationProvider(Provider):
@@ -81,6 +89,10 @@ class ViServerProvider(Provider):
         self.username = username
         self.password = password
         super(ViServerProvier, self).__init__()
+
+    @classmethod
+    def probe(cls):
+        return False
 
 
 class VirtualMachine(object):
