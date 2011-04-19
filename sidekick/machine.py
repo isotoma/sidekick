@@ -20,7 +20,7 @@ This is still a grey area of the API and may become part of a base class for the
 continue to wrap it.
 """
 
-import os, time
+import os
 
 from sidekick import errors
 #from sidekick.vm.vmware import WorkstationProvider, PlayerProvider
@@ -62,30 +62,8 @@ class Machine(object):
     def name(self):
         return self.config["name"]
 
-    def approaching(self, desired_state):
-        if desired_state == "running":
-            if self.vm.get_powerstate() in ("running", "nearly-running", "booting"):
-                return True
-            return False
-
     def is_running(self):
         return self.vm.get_powerstate() == "running"
-
-    def wait_for_boot(self):
-        if self.approaching("running"):
-            while not self.is_running():
-                print "Waiting for boot..."
-                time.sleep(5)
-        else:
-            print self.vm.get_powerstate()
-
-    def wait_for_ip(self):
-        ip = None
-        while not ip:
-            print "Waiting for ip..."
-            ip = self.vm.get_ip()
-            time.sleep(5)
-        return ip
 
     def get_ip(self):
         return self.vm.get_ip()
@@ -95,8 +73,6 @@ class Machine(object):
             raise errors.VmAlreadyRunning()
 
         self.vm.power_on()
-        self.wait_for_boot()
-        #self.wait_for_ip()
 
     def provision(self):
         #if not self.is_running():

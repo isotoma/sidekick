@@ -28,7 +28,7 @@ class Provider(BaseProvider):
 
     @classmethod
     def probe(cls):
-        return True
+        return False
 
     def provide(self, machine):
         if not self.globl:

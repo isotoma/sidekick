@@ -13,9 +13,10 @@
 # limitations under the License.
 
 
-import os, shutil
+import os, shutil, time
 from ctypes import byref, string_at, c_char_p #, create_string_buffer
 
+from sidekick.vm import BaseProvider
 from sidekick.vm.vmware import low, errors
 
 class Job(object):
@@ -31,7 +32,7 @@ class Job(object):
         low.vix.Vix_ReleaseHandle(self.handle)
 
 
-class Provider(object):
+class Provider(BaseProvider):
 
     conntype = None
     hostname = ""
@@ -48,10 +49,10 @@ class Provider(object):
         return True
 
     def provide(self, machine):
-        if not self.globl:
+        if not self.handle:
             self.connect()
 
-        vm = VirtualMachine(self.handle, vmx, default_powerop_start=self.default_powerop_start)
+        vm = VirtualMachine(self.handle, machine.name, default_powerop_start=self.default_powerop_start)
         vm.open()
         return vm
 
@@ -73,6 +74,7 @@ class Provider(object):
 
 
 class WorkstationProvider(Provider):
+    name = "vmware-workstation"
     conntype = low.VIX_SERVICEPROVIDER_VMWARE_WORKSTATION
 
 
@@ -112,6 +114,9 @@ class VirtualMachine(object):
         job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, byref(ip), low.VIX_PROPERTY_NONE)
 
         return string_at(ip)
+
+    def get_ssh_details(self):
+        return "sidekick", self.get_ip(), "22"
 
     def get_powerstate(self):
         if not self.vm:
@@ -178,9 +183,29 @@ class VirtualMachine(object):
         job = Job(low.vix.VixVM_DeleteFileInGuest(self.vm, path, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
 
+    def approaching(self, desired_state):
+        if desired_state == "running":
+            if self.get_powerstate() in ("running", "nearly-running", "booting"):
+                return True
+            return False
+
     def power_on(self):
         job = Job(low.vix.VixVM_PowerOn(self.vm, self.default_powerop_start, low.VIX_INVALID_HANDLE, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
+
+        if self.approaching("running"):
+            while not self.get_powerstate() == "running":
+                print "Waiting for boot..."
+                time.sleep(5)
+        else:
+            print self.get_powerstate()
+
+        ip = None
+        while not ip:
+            print "Waiting for ip..."
+            ip = self.get_ip()
+            time.sleep(5)
+        return ip
 
     def power_off(self):
         job = Job(low.vix.VixVM_PowerOff(self.vm, low.VIX_VMPOWEROP_NORMAL, None, None))
