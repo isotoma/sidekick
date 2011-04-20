@@ -59,6 +59,10 @@ class Machine(object):
         #self.vm = p.open(self.config.get("path"))
 
     @property
+    def base(self):
+        return self.config["base"]
+
+    @property
     def name(self):
         return self.config["name"]
 

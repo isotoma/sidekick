@@ -13,9 +13,10 @@
 # limitations under the License.
 
 
-import os, shutil, time
+import os, shutil, time, glob
 from ctypes import byref, string_at, c_char_p #, create_string_buffer
 
+from sidekick.images import ImageRegistry
 from sidekick.vm import BaseProvider
 from sidekick.vm.vmware import low, errors
 
@@ -52,7 +53,25 @@ class Provider(BaseProvider):
         if not self.handle:
             self.connect()
 
-        vm = VirtualMachine(self.handle, machine.name, default_powerop_start=self.default_powerop_start)
+        if not os.path.exists(machine.name):
+            base_path = ImageRegistry().get_image(machine.base)
+
+            if os.path.isdir(base_path):
+                vmxes = glob.glob(os.path.join(base_path, "*.vmx"))
+
+                if not vmxes:
+                    raise RuntimeError("%s is not a valid base image" % machine.base)
+
+                base_path = vmxes[0]
+
+            print "VM doesnt exit - cloning..."
+            base = self.open(base_path)
+            base.clone(machine.name)
+
+        return self.open(machine.name)
+
+    def open(self, vmx):
+        vm = VirtualMachine(self.handle, vmx, default_powerop_start=self.default_powerop_start)
         vm.open()
         return vm
 
