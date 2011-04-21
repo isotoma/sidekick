@@ -16,7 +16,7 @@ def tail(path):
         else:
             time.sleep(1)
 
-def tail_daemon_log():
+def tail_vmware_dhcp():
     regex = re.compile("DHCPACK on (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) to (?P<mac>([0-9a-f]{2}\:){5}[0-9a-f]{2}) via ")
     for line in tail('/var/log/daemon.log'):
         m = regex.search(line)
@@ -24,5 +24,4 @@ def tail_daemon_log():
             continue
         yield m.group('mac'), m.group('ip')
 
-for res in tail_daemon_log():
-    print res
+

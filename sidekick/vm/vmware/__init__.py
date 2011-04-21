@@ -16,6 +16,7 @@
 import os, shutil, time, glob
 from ctypes import byref, string_at, c_char_p #, create_string_buffer
 
+from sidekick import util
 from sidekick.images import ImageRegistry
 from sidekick.vm import BaseProvider
 from sidekick.vm.vmware import low, errors
@@ -125,6 +126,7 @@ class VirtualMachine(BaseMachine):
         self.path = path
         self.vm = None
         self.default_powerop_start = default_powerop_start
+        self.ip = None
 
     def get_mac(self):
         if not self.vm:
@@ -147,15 +149,20 @@ class VirtualMachine(BaseMachine):
         assert False, "Unable to determin a MAC address for this VM"
 
     def get_ip(self):
+        if self.ip:
+            return self.ip
+
         if not self.vm:
             self.connect()
-
-        print self.get_mac()
 
         ip = c_char_p()
         job = Job(low.vix.VixVM_ReadVariable(self.vm, low.VIX_VM_GUEST_VARIABLE, "ip", 0, None, None))
         job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, byref(ip), low.VIX_PROPERTY_NONE)
         ip = string_at(ip)
+
+        if not self.ip and ip:
+            self.ip = ip
+
         return ip
 
     def get_ssh_details(self):
@@ -233,22 +240,17 @@ class VirtualMachine(BaseMachine):
             return False
 
     def power_on(self):
+        if self.approaching("running"):
+            raise RuntimeError("VM Already Running")
+
         job = Job(low.vix.VixVM_PowerOn(self.vm, self.default_powerop_start, low.VIX_INVALID_HANDLE, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
 
-        if self.approaching("running"):
-            while not self.get_powerstate() == "running":
-                print "Waiting for boot..."
-                time.sleep(5)
-        else:
-            print self.get_powerstate()
-
-        ip = None
-        while not ip:
-            print "Waiting for ip..."
-            ip = self.get_ip()
-            time.sleep(5)
-        return ip
+        mac = self.get_mac()
+        for log_mac, ip in util.tail_vmware_dhcp():
+            if mac == log_mac:
+                self.ip = ip
+                return ip
 
     def power_off(self):
         job = Job(low.vix.VixVM_PowerOff(self.vm, low.VIX_VMPOWEROP_NORMAL, None, None))
