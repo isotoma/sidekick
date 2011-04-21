@@ -1,5 +1,5 @@
 
-import time, os
+import time, os, re
 
 def tail(path):
     #FIXME: Track inode num so we can survive logrotate
@@ -17,9 +17,12 @@ def tail(path):
             time.sleep(1)
 
 def tail_daemon_log():
+    regex = re.compile("DHCPACK on (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) to (?P<mac>([0-9a-f]{2}\:){5}[0-9a-f]{2}) via ")
     for line in tail('/var/log/daemon.log'):
-        """
-        Apr 20 18:43:49 cocacola vmnet-dhcpd: DHCPREQUEST for 192.168.202.130 from 00:0c:29:70:43:66 via vmnet8
-        Apr 20 18:43:49 cocacola vmnet-dhcpd: DHCPACK on 192.168.202.130 to 00:0c:29:70:43:66 via vmnet8
-        """
+        m = regex.search(line)
+        if not m:
+            continue
+        yield m.group('mac'), m.group('ip')
 
+for res in tail_daemon_log():
+    print res
