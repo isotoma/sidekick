@@ -126,15 +126,37 @@ class VirtualMachine(BaseMachine):
         self.vm = None
         self.default_powerop_start = default_powerop_start
 
+    def get_mac(self):
+        if not self.vm:
+            self.connect()
+        mac = c_char_p()
+        job = Job(low.vix.VixVM_ReadVariable(self.vm, low.VIX_VM_CONFIG_RUNTIME_ONLY, "ethernet0.generatedAddress", 0, None, None))
+        job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, byref(mac), low.VIX_PROPERTY_NONE)
+
+        mac_str = string_at(mac)
+        if mac_str:
+            return mac_str
+
+        job = Job(low.vix.VixVM_ReadVariable(self.vm, low.VIX_VM_CONFIG_RUNTIME_ONLY, "ethernet0.address", 0, None, None))
+        job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, byref(mac), low.VIX_PROPERTY_NONE)
+
+        mac_str = string_at(mac)
+        if mac_str:
+             return mac_str
+
+        assert False, "Unable to determin a MAC address for this VM"
+
     def get_ip(self):
         if not self.vm:
             self.connect()
 
+        print self.get_mac()
+
         ip = c_char_p()
         job = Job(low.vix.VixVM_ReadVariable(self.vm, low.VIX_VM_GUEST_VARIABLE, "ip", 0, None, None))
         job.wait(low.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING, byref(ip), low.VIX_PROPERTY_NONE)
-
-        return string_at(ip)
+        ip = string_at(ip)
+        return ip
 
     def get_ssh_details(self):
         return "sidekick", self.get_ip(), "22"
