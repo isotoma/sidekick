@@ -16,7 +16,7 @@
 Main entry point. Finds a Command object and hands control over to it.
 """
 
-import sys
+import sys, optparse
 
 from sidekick.commands import CommandType
 
@@ -34,14 +34,19 @@ def usage():
 
 
 def main():
-    if len(sys.argv) < 2:
+    p = optparse.OptionParser()
+    p.add_option("-p", "--project")
+    opts, args = p.parse_args()
+
+    if len(args) == 0:
         usage()
         sys.exit(1)
 
-    command = sys.argv[1]
+    command = args[0]
     if not command in CommandType.commands:
         print "Unknown subcommand; %s" % command
         sys.exit(1)
 
-    CommandType.commands[command](sys.argv[2:]).do()
+    CommandType.commands[command](args[1:]).do()
     print "done."
+
