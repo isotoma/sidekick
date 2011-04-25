@@ -94,11 +94,17 @@ class Provider(BaseProvider):
 
 class WorkstationProvider(Provider):
     name = "vmware-workstation"
-    conntype = low.VIX_SERVICEPROVIDER_VMWARE_WORKSTATION
 
-
-class PlayerProvider(Provider):
-    conntype = low.VIX_SERVICEPROVIDER_VMWARE_PLAYER
+    def connect(self):
+        self.conntype = low.VIX_SERVICEPROVIDER_VMWARE_WORKSTATION
+        try:
+            Provider.connect(self)
+        except errors.WRAPPER_WORKSTATION_NOT_INSTALLED:
+            self.conntype = low.VIX_SERVICEPROVIDER_VMWARE_PLAYER
+            try:
+                Provider.connect(self)
+            except errors.WRAPPER_PLAYER_NOT_INSTALLED:
+                raise RuntimeError("Cannot find Vmware Workstation or Player Environment")
 
 
 class ViServerProvider(Provider):

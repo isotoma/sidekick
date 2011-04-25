@@ -41,16 +41,6 @@ class Machine(object):
 
         self.vm = providers[0]().provide(self)
 
-        #try:
-        #    p = WorkstationProvider()
-        #    p.connect()
-        #except WRAPPER_WORKSTATION_NOT_INSTALLED:
-        #    try:
-        #        p = PlayerProvider()
-        #        p.connect()
-        #    except WRAPPER_PLAYER_NOT_INSTALLED:
-        #        raise RuntimeError("Cannot find VM Environment")
-
         #if not os.path.exists(self.config.get("path")):
         #    print "VM doesnt exit - cloning..."
         #    base = p.open(self.config.get("base"))
