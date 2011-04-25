@@ -21,6 +21,7 @@ file.
 """
 
 import os
+import yay
 
 class Registry(object):
 
@@ -29,16 +30,38 @@ class Registry(object):
 
         self.dotdir = os.path.expanduser("~/.sidekick")
         self.registry = os.path.join(self.dotdir, "registry")
+        self.index_file = os.path.join(self.registry, "index.yay")
 
-    def load_environments(self):
-        pass
+        if not os.path.exists(self.registry):
+            os.makedirs(self.registry)
 
-    def save_environments(self):
-        pass
+        if os.path.exists(self.index_file):
+            self.index = yay.load_uri(self.index_file)
+        else:
+            self.index = {}
 
-    def get_environment(self, path):
-        pass
+    def save(self):
+        open(self.index_file, "w").write(yay.dump(self.index))
 
-    def get_all_environments(self):
-        pass
+    def contains(self, name):
+        return name in self.index
+
+    def get(self, name):
+        return self.index[name]
+
+    def register(self, name, details):
+        if self.contains(name):
+            raise RuntimeError("'%s' is already defined" % name)
+
+        cached_path = os.path.join(self.registry, "%s.yay" % name)
+        cached = yay.dump(yay.load_uri(details))
+        open(cached_path, "w").write(cached)
+
+        self.index[name] = {
+            "name": name,
+            "sidekick-file": details,
+            "cached-sidekick-file": cached_path,
+            }
+
+        self.save()
 

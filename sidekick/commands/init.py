@@ -14,10 +14,26 @@
 
 
 from sidekick.commands.base import Command
+from sidekick.registry import Registry
 
 class Init(Command):
 
     """ Generate a Sidekick file in the current directory """
 
     name = "init"
+
+
+    def setup_optparse(self, parser, args):
+        args.append("name")
+
+    def do(self):
+        r = Registry()
+
+        if r.contains(self.args[0]):
+            raise RuntimeError("That project is already registered")
+
+        sidekick_file = "Sidekick"
+
+        r.register(self.args[0], sidekick_file)
+
 
