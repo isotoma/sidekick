@@ -41,13 +41,6 @@ class Machine(object):
 
         self.vm = providers[0]().provide(self)
 
-        #if not os.path.exists(self.config.get("path")):
-        #    print "VM doesnt exit - cloning..."
-        #    base = p.open(self.config.get("base"))
-        #    base.clone(self.config.get("path"))
-
-        #self.vm = p.open(self.config.get("path"))
-
     @property
     def base(self):
         return self.config["base"]
