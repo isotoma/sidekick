@@ -16,7 +16,7 @@
 Main entry point. Finds a Command object and hands control over to it.
 """
 
-import sys, optparse
+import sys, optparse, os
 
 from sidekick.commands import CommandType
 
@@ -46,6 +46,11 @@ def main():
     if not command in CommandType.commands:
         print "Unknown subcommand; %s" % command
         sys.exit(1)
+
+    path = ["/"] + list(os.getcwd().split(os.path.sep)) + ["Sidekick"]
+    while path and not os.path.exists(os.path.join(*path)):
+        path = path[:-2] + ["Sidekick"]
+        print path
 
     CommandType.commands[command](args[1:]).do()
     print "done."
