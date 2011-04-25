@@ -20,19 +20,22 @@ import sys
 
 from sidekick.commands import CommandType
 
+def usage():
+    print "Usage: %s SUBCOMMAND [OPTIONS]" % sys.argv[0]
+
+    max_padding = max(len(name) for name in CommandType.commands.keys()) + 4
+    if max_padding > 4:
+        print ""
+        for name, command in CommandType.commands.items():
+            padding = " " * (max_padding - len(name))
+            print "    %s%s%s" % (name, padding, command.__doc__.split("\n")[0])
+        print ""
+
+
 
 def main():
     if len(sys.argv) < 2:
-        print "Usage: %s SUBCOMMAND [OPTIONS]" % sys.argv[0]
-
-        max_padding = max(len(name) for name in CommandType.commands.keys()) + 4
-        if max_padding > 4:
-            print ""
-            for name, command in CommandType.commands.items():
-                padding = " " * (max_padding - len(name))
-                print "    %s%s%s" % (name, padding, command.__doc__.split("\n")[0])
-            print ""
-
+        usage()
         sys.exit(1)
 
     command = sys.argv[1]
