@@ -28,7 +28,8 @@ class Registry(object):
     def __init__(self):
         self.environments = {}
 
-        self.dotdir = os.path.expanduser("~/.sidekick")
+        datadir = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
+        self.dotdir = os.path.join(datadir, "sidekick")
         self.registry = os.path.join(self.dotdir, "registry")
         self.index_file = os.path.join(self.registry, "index.yay")
 
