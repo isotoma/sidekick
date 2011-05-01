@@ -19,6 +19,7 @@ from sidekick.commands import (
     deploy,
     down,
     init,
+    nc,
     ssh,
     up,
     )
