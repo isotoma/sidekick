@@ -53,7 +53,7 @@ class Instances(BaseRegistry):
 
     file = "instances.yay"
 
-    def register(self, name, details):
+    def register(self, name, env, details):
         if self.contains(name):
             raise RuntimeError("'%s' is already defined" % name)
 

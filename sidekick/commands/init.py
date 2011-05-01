@@ -24,6 +24,7 @@ class Init(Command):
 
     def setup_optparse(self, parser, args):
         args.append("name")
+        args.append("env")
 
     def do(self):
         if self.registry.contains(self.args[0]):
@@ -31,6 +32,6 @@ class Init(Command):
 
         sidekick_file = "Sidekick"
 
-        self.registry.register(self.args[0], sidekick_file)
+        self.registry.register(self.args[0], self.args[1], sidekick_file)
 
 
