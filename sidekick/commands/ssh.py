@@ -30,8 +30,8 @@ class Ssh(ProjectCommand):
         #  - if there is only 1 defined, ssh into that
         #  - if there is only 1 defined and the name is specified it
         #    must be right
-        vms = self.project.all_vms()
-        vm = list(vms)[0]
+        nodes = self.get_nodes()
+        node = list(node)[0]
 
         #if not vm.is_running():
         #    raise errors.VmNotRunning()
@@ -41,7 +41,7 @@ class Ssh(ProjectCommand):
         # if deploy_user:
         #     command.extend(['-l', deploy_user])
 
-        command.append(vm.get_ip())
+        command.append(node.get_ip())
 
         os.execv("/usr/bin/ssh", command)
 

@@ -31,21 +31,21 @@ class Nc(ProjectCommand):
 
     name = "nc"
 
+    def setup_optparse(self, parser, args):
+        args.append("hostname")
+        args.append("port")
+
     def do(self):
-        #FIXME: Pick a VM:
-        #  - if there is more than 1 defined, must be specified
-        #  - if there is only 1 defined, ssh into that
-        #  - if there is only 1 defined and the name is specified it
-        #    must be right
-        vms = self.project.all_vms()
-        vm = list(vms)[0]
+        #FIXME: Need to pick a specific node...
+        nodes = self.get_nodes()
+        node = list(nodes)[0]
 
         #if not vm.is_running():
         #    raise errors.VmNotRunning()
 
         command = ["nc"]
-        command.append(vm.get_ip())
-        command.append(self.args[0])
+        command.append(node.get_ip())
+        command.append(self.args[1])
 
         os.execv("/usr/bin/nc", command)
 

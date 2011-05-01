@@ -22,6 +22,6 @@ class Deploy(ProjectCommand):
     name = "deploy"
 
     def do(self):
-        for vm in self.project.all_vms():
-            vm.provision()
+        for node in self.get_nodes():
+            node.provision()
 

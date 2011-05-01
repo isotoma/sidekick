@@ -16,7 +16,6 @@
 import sys, optparse
 
 from sidekick.registry import Instances, Environments
-from sidekick.project import Project
 
 
 class CommandType(type):
@@ -73,5 +72,4 @@ class ProjectCommand(Command):
 
     def __init__(self, args):
         super(ProjectCommand, self).__init__(args)
-        self.project = Project()
 

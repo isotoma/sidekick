@@ -22,8 +22,8 @@ class Up(ProjectCommand):
     name = "up"
 
     def do(self):
-        for vm in self.project.all_vms():
-            vm.power_on()
-            vm.provision()
+        for node in self.get_nodes():
+            node.power_on()
+            node.provision()
 
 
