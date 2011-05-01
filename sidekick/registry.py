@@ -85,6 +85,6 @@ class Environments(BaseRegistry):
             }
         env.update(config)
 
-        self.environments[name] = env
+        self.index[name] = env
         self.save()
 

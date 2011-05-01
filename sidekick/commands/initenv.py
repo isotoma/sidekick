@@ -17,7 +17,7 @@ from sidekick.commands.base import Command
 
 class InitEnv(Command):
 
-    """ Generate a Sidekick file in the current directory """
+    """ Configure an environment to run nodes in """
 
     name = "initenv"
 
@@ -27,8 +27,8 @@ class InitEnv(Command):
 
     def do(self):
         if self.environments.contains(self.args[0]):
-            raise RuntimeError("That project is already registered")
+            raise RuntimeError("That environment is already registered")
 
-        self.environments.register(self.args[0], "vmware", {})
+        self.environments.register(self.args[0], "fake", {})
 
 
