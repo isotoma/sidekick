@@ -63,6 +63,7 @@ class Instances(BaseRegistry):
 
         self.index[name] = {
             "name": name,
+            "env": env,
             "sidekick-file": details,
             "cached-sidekick-file": cached_path,
             }
