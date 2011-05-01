@@ -65,6 +65,9 @@ class Command(object):
     def do(self):
         raise NotImplementedError
 
+    def get_nodes(self, instance=''):
+        pass
+
 
 class ProjectCommand(Command):
 

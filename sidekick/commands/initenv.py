@@ -13,15 +13,22 @@
 # limitations under the License.
 
 
-from sidekick.commands.base import CommandType
-from sidekick.commands import (
-    buildbase,
-    deploy,
-    down,
-    init,
-    initenv,
-    nc,
-    ssh,
-    up,
-    )
+from sidekick.commands.base import Command
+
+class InitEnv(Command):
+
+    """ Generate a Sidekick file in the current directory """
+
+    name = "initenv"
+
+
+    def setup_optparse(self, parser, args):
+        args.append("name")
+
+    def do(self):
+        if self.environments.contains(self.args[0]):
+            raise RuntimeError("That project is already registered")
+
+        self.environments.register(self.args[0], "vmware", {})
+
 
