@@ -61,28 +61,6 @@ class Machine(object):
 
         self.vm.power_on()
 
-    def provision(self):
-        #if not self.is_running():
-        #    raise errors.VmNotRunning()
-
-        print "Provisioning vm..."
-
-        p = None
-        if "provisioner" in self.project.config:
-            try:
-                p = ProvisionerType.provisioners[self.project.config["provisioner"]]
-            except KeyError:
-                raise RuntimeError("There is no such provisioner: '%s'" % self.project.config["provisioner"])
-        else:
-            for p in ProvisionerType.provisioners.values():
-                if p.can_provision(self):
-                    break
-            else:
-                raise RuntimeError("Cannot find a suitable provisioner")
-
-        # Actually do this thing
-        p(self).provision()
-
     def power_off(self):
         if not self.is_running:
             raise errors.VmNotRunning()

@@ -118,7 +118,7 @@ class ViServerProvider(Provider):
         super(ViServerProvier, self).__init__()
 
 
-class VirtualMachine(object):
+class VirtualMachine(BaseMachine):
 
     def __init__(self, host, path, default_powerop_start=low.VIX_VMPOWEROP_NORMAL):
         self.host = host
