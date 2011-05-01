@@ -14,7 +14,6 @@
 
 
 from sidekick.commands.base import Command
-from sidekick.registry import Registry
 
 class Init(Command):
 
@@ -27,13 +26,11 @@ class Init(Command):
         args.append("name")
 
     def do(self):
-        r = Registry()
-
-        if r.contains(self.args[0]):
+        if self.registry.contains(self.args[0]):
             raise RuntimeError("That project is already registered")
 
         sidekick_file = "Sidekick"
 
-        r.register(self.args[0], sidekick_file)
+        self.registry.register(self.args[0], sidekick_file)
 
 

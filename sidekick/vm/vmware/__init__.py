@@ -35,6 +35,9 @@ class Job(object):
 
 class Provider(BaseProvider):
 
+    parameters = [
+    ]
+
     conntype = None
     hostname = ""
     hostport = 0
@@ -42,12 +45,8 @@ class Provider(BaseProvider):
     password = ""
     default_powerop_start = low.VIX_VMPOWEROP_LAUNCH_GUI
 
-    def __init__(self):
+    def __init__(self, config):
         self.handle = None
-
-    @classmethod
-    def probe(cls):
-        return True
 
     def provide(self, machine):
         if not self.handle:
@@ -110,16 +109,13 @@ class WorkstationProvider(Provider):
 class ViServerProvider(Provider):
     default_powerop_start = low.VIX_VMPOWEROP_NORMAL
 
-    def __init__(self, hostname, username, password, hostport=0):
-        self.hostname = hostname
-        self.hostport = hostport
-        self.username = username
-        self.password = password
+    def __init__(self, config):
+        #hostname, username, password, hostport=0):
+        self.hostname = config["hostname"]
+        self.hostport = config.get("hostport", 0)
+        self.username = config["username"]
+        self.password = config["password"]
         super(ViServerProvier, self).__init__()
-
-    @classmethod
-    def probe(cls):
-        return False
 
 
 class VirtualMachine(object):

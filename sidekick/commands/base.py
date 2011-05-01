@@ -15,7 +15,7 @@
 
 import sys, optparse
 
-from sidekick.registry import Registry
+from sidekick.registry import Instances, Environments
 from sidekick.project import Project
 
 
@@ -57,7 +57,8 @@ class Command(object):
         if len(self.args) != len(expected_args):
             print p.error("Expected %d arguments, but got %d" % (len(expected_args), len(self.args)))
 
-        self.registry = Registry()
+        self.registry = Instances()
+        self.environments = Environments()
 
     def setup_optparse(self, p, a):
         pass

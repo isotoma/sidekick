@@ -28,15 +28,6 @@ class ProviderType(type):
 
         return cls
 
-    @classmethod
-    def find(cls, project, config):
-        matches = []
-        for provider in cls.providers.itervalues():
-            if provider.probe():
-                matches.append(provider)
-
-        return matches
-
 
 class BaseProvider(object):
 

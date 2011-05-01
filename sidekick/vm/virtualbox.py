@@ -21,14 +21,13 @@ from sidekick.vm import BaseProvider
 class Provider(BaseProvider):
 
     name = "virtualbox"
+    parameters = [
+    ]
+
     style = None
 
-    def __init__(self):
+    def __init__(self, config):
         self.globl = None
-
-    @classmethod
-    def probe(cls):
-        return False
 
     def provide(self, machine):
         if not self.globl:

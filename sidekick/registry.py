@@ -23,15 +23,13 @@ file.
 import os
 import yay
 
-class Registry(object):
+class BaseRegistry(object):
 
     def __init__(self):
-        self.environments = {}
-
         datadir = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
         self.dotdir = os.path.join(datadir, "sidekick")
         self.registry = os.path.join(self.dotdir, "registry")
-        self.index_file = os.path.join(self.registry, "index.yay")
+        self.index_file = os.path.join(self.registry, self.file)
 
         if not os.path.exists(self.registry):
             os.makedirs(self.registry)
@@ -50,6 +48,11 @@ class Registry(object):
     def get(self, name):
         return self.index[name]
 
+
+class Instances(BaseRegistry):
+
+    file = "instances.yay"
+
     def register(self, name, details):
         if self.contains(name):
             raise RuntimeError("'%s' is already defined" % name)
@@ -64,5 +67,23 @@ class Registry(object):
             "cached-sidekick-file": cached_path,
             }
 
+        self.save()
+
+
+class Environments(BaseRegistry):
+
+    file = "environments.yay"
+
+    def register(self, name, type, config):
+        if self.contains(name):
+            raise RuntimeError("'%s' is already defined")
+
+        env = {
+            "name": name,
+            "type": type,
+            }
+        env.update(config)
+
+        self.environments[name] = env
         self.save()
 
