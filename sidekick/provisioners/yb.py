@@ -51,8 +51,13 @@ class YaybuProvisioner(Provisioner):
             s = StringIO.StringIO(dump(yb))
             conf.load(s)
 
+        config = conf.get()
+        config.setdefault("sidekick", {}).update({
+            "primaryip": self.machine.get_ip(),
+            })
+
         with open("foo.yay", "w") as f:
-            f.write(dump(conf.get()))
+            f.write(dump(config))
 
         class opts:
             log_level = "info"
