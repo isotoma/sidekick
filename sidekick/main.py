@@ -35,7 +35,7 @@ def usage():
 
 def main():
     p = optparse.OptionParser()
-    p.add_option("-p", "--project")
+    p.add_option("-i", "--instance")
     opts, args = p.parse_args()
 
     if len(args) == 0:
@@ -47,11 +47,16 @@ def main():
         print "Unknown subcommand; %s" % command
         sys.exit(1)
 
-    path = ["/"] + list(os.getcwd().split(os.path.sep)) + ["Sidekick"]
-    while path and not os.path.exists(os.path.join(*path)):
-        path = path[:-2] + ["Sidekick"]
-        print path
+    cmd = CommandType.commands[command](args[1:])
 
-    CommandType.commands[command](args[1:]).do()
+    if opts.instance:
+        cmd.instance = instance
+    else:
+        path = ["/"] + list(os.getcwd().split(os.path.sep)) + ["Sidekick"]
+        while path and not os.path.exists(os.path.join(*path)):
+            path = path[:-2] + ["Sidekick"]
+        cmd.sidekick_path = path
+
+    cmd.do()
     print "done."
 
