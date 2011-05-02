@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import os
 from sidekick.commands.base import Command
 
 class Init(Command):
@@ -30,7 +30,7 @@ class Init(Command):
         if self.registry.contains(self.args[0]):
             raise RuntimeError("That project is already registered")
 
-        sidekick_file = "Sidekick"
+        sidekick_file = os.path.abspath("Sidekick")
 
         self.registry.register(self.args[0], self.args[1], sidekick_file)
 
