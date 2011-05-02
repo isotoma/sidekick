@@ -40,6 +40,9 @@ class Command(object):
     __metaclass__ = CommandType
 
     def __init__(self, args):
+        self.cluster = None
+        self.sidekick_file = None
+
         p = optparse.OptionParser()
 
         # Set default optparse settings
@@ -73,6 +76,17 @@ class Command(object):
     def get_environments(self):
         for env in self.environments.all():
             yield self.get_environment(env)
+
+    def get_current_cluster(self):
+        if self.cluster:
+            return self.get_cluster(self.cluster)
+
+        if self.sidekick_file:
+            for cluster in self.get_clusters():
+                if cluster.config['sidekick_file'] == self.sidekick_file:
+                    return cluster
+
+        raise RuntimeError("You failed to specify a cluster and one could not be found based on cwd.")
 
     def get_cluster(self, name):
         return Cluster(

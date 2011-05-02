@@ -35,7 +35,7 @@ def usage():
 
 def main():
     p = optparse.OptionParser()
-    p.add_option("-i", "--instance")
+    p.add_option("-c", "--cluster")
     opts, args = p.parse_args()
 
     if len(args) == 0:
@@ -49,8 +49,8 @@ def main():
 
     cmd = CommandType.commands[command](args[1:])
 
-    if opts.instance:
-        cmd.instance = instance
+    if opts.cluster:
+        cmd.cluster = cluster
     else:
         path = ["/"] + list(os.getcwd().split(os.path.sep)) + ["Sidekick"]
         while path and not os.path.exists(os.path.join(*path)):
