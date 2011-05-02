@@ -48,15 +48,7 @@ def main():
         sys.exit(1)
 
     cmd = CommandType.commands[command](args[1:])
-
-    if opts.cluster:
-        cmd.cluster = cluster
-    else:
-        path = ["/"] + list(os.getcwd().split(os.path.sep)) + ["Sidekick"]
-        while path and not os.path.exists(os.path.join(*path)):
-            path = path[:-2] + ["Sidekick"]
-        cmd.sidekick_path = path
-
+    cmd.cluster = opts.cluster
     cmd.do()
     print "done."
 

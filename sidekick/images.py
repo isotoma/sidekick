@@ -14,7 +14,10 @@
 
 import os, hashlib, zipfile, tarfile
 
-import magic
+try:
+    import magic
+except:
+    magic = None
 
 from sidekick.downloader import Download
 

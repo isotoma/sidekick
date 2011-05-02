@@ -13,11 +13,11 @@
 # limitations under the License.
 
 
-import sys, optparse
+import os, sys, optparse
 
 from sidekick.cluster import Cluster
 from sidekick.registry import Instances, Environments
-
+from sidekick.vm import ProviderType
 
 class CommandType(type):
 
@@ -81,20 +81,27 @@ class Command(object):
         if self.cluster:
             return self.get_cluster(self.cluster)
 
-        if self.sidekick_file:
-            for cluster in self.get_clusters():
-                if cluster.config['sidekick_file'] == self.sidekick_file:
-                    return cluster
+        path = ["/"] + list(os.getcwd().split(os.path.sep)) + ["Sidekick"]
+        while path and not os.path.exists(os.path.join(*path)):
+            path = path[:-2] + ["Sidekick"]
+
+        if not os.path.exists(os.path.join(*path)):
+            raise RuntimeError("You did not specify a cluster and there is no Sidekick in cwd to look one up")
+
+        for cluster in self.get_clusters():
+            if cluster.config['sidekick-file'] == os.path.join(*path):
+                return cluster
 
         raise RuntimeError("You failed to specify a cluster and one could not be found based on cwd.")
 
     def get_cluster(self, name):
+        cluster = self.registry.get(name)
         return Cluster(
             cluster['name'],
-            self.environments.get(cluster['env']),
+            self.get_environment(cluster['env']),
             cluster)
 
-    def get_clusters(self, names):
+    def get_clusters(self):
         for cluster in self.registry.all():
             yield self.get_cluster(cluster)
 
