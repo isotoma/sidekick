@@ -15,6 +15,7 @@
 
 import sys, optparse
 
+from sidekick.cluster import Cluster
 from sidekick.registry import Instances, Environments
 
 
@@ -65,9 +66,23 @@ class Command(object):
     def do(self):
         raise NotImplementedError
 
-    def get_nodes(self, instance=''):
-        pass
+    def get_environment(self, name):
+        env = self.environments.get(name)
+        return ProviderType.providers[env['type']](env)
 
+    def get_environments(self):
+        for env in self.environments.all():
+            yield self.get_environment(env)
+
+    def get_cluster(self, name):
+        return Cluster(
+            cluster['name'],
+            self.environments.get(cluster['env']),
+            cluster)
+
+    def get_clusters(self, names):
+        for cluster in self.registry.all():
+            yield self.get_cluster(cluster)
 
 class ProjectCommand(Command):
 

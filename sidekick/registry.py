@@ -42,6 +42,9 @@ class BaseRegistry(object):
     def save(self):
         open(self.index_file, "w").write(yay.dump(self.index))
 
+    def all(self):
+        return self.index.keys()
+
     def contains(self, name):
         return name in self.index
 
