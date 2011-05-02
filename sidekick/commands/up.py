@@ -22,7 +22,7 @@ class Up(ProjectCommand):
     name = "up"
 
     def do(self):
-        for node in self.get_nodes():
+        for node in self.get_current_cluster().get_nodes():
             node.power_on()
             node.provision()
 

@@ -30,7 +30,7 @@ class Ssh(ProjectCommand):
         #  - if there is only 1 defined, ssh into that
         #  - if there is only 1 defined and the name is specified it
         #    must be right
-        nodes = self.get_nodes()
+        nodes = self.get_current_cluster().get_nodes()
         node = list(node)[0]
 
         #if not vm.is_running():

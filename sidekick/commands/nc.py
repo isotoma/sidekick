@@ -37,7 +37,7 @@ class Nc(ProjectCommand):
 
     def do(self):
         #FIXME: Need to pick a specific node...
-        nodes = self.get_nodes()
+        nodes = self.get_current_cluster().get_nodes()
         node = list(nodes)[0]
 
         #if not vm.is_running():

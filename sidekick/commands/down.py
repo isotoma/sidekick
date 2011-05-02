@@ -22,6 +22,6 @@ class Down(ProjectCommand):
     name = "down"
 
     def do(self):
-        for node in self.get_nodes():
+        for node in self.get_current_cluster().get_nodes():
             node.power_off()
 
