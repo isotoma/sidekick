@@ -21,6 +21,7 @@ setup(name='Sidekick',
       install_requires=[
           'setuptools',
           'yaybu',
+          'apache-libcloud',
       ],
       extras_require = {
           'test': ['testtools', 'discover', 'mock'],

@@ -18,5 +18,6 @@ from sidekick.vm import (
     fake,
     virtualbox,
     #vmware,
+    libcloud,
     )
 
