@@ -28,7 +28,7 @@ class Cluster(object):
             if node['name'] == name:
                 break
         else:
-            raise KeyError("Node '%s' is not defined" % name
+            raise KeyError("Node '%s' is not defined" % name)
 
         return self._get_machine(node)
 
