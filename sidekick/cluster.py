@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import yay
 
 class Cluster(object):
 
@@ -33,6 +34,7 @@ class Cluster(object):
         return self._get_machine(node)
 
     def get_nodes(self):
-        for node in self.config.get("nodes", []):
+        config = yay.load_uri(self.config["cached-sidekick-file"])
+        for node in config.get("nodes", []):
             yield self._get_machine(node)
 
