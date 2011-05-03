@@ -18,7 +18,7 @@ from ctypes import byref, string_at, c_char_p #, create_string_buffer
 
 from sidekick import util
 from sidekick.images import ImageRegistry
-from sidekick.vm import BaseProvider
+from sidekick.vm import BaseProvider, BaseMachine
 from sidekick.vm.vmware import low, errors
 
 class Job(object):
@@ -93,7 +93,7 @@ class Provider(BaseProvider):
 
 
 class WorkstationProvider(Provider):
-    name = "vmware-workstation"
+    name = "vmware"
 
     def connect(self):
         self.conntype = low.VIX_SERVICEPROVIDER_VMWARE_WORKSTATION

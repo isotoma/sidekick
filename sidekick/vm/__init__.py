@@ -17,7 +17,7 @@ from sidekick.vm.base import ProviderType, BaseProvider, BaseMachine
 from sidekick.vm import (
     fake,
     virtualbox,
-    #vmware,
+    vmware,
     libcloud,
     )
 
