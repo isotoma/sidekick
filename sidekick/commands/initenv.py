@@ -30,6 +30,6 @@ class InitEnv(Command):
         if self.environments.contains(self.args[0]):
             raise RuntimeError("That environment is already registered")
 
-        self.environments.register(self.args[0], self.opts.provider, {})
+        self.environments.register(self.args[0], self.options.provider, {})
 
 
