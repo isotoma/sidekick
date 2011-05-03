@@ -34,9 +34,7 @@ def usage():
 
 
 def main():
-    p = optparse.OptionParser()
-    p.add_option("-c", "--cluster")
-    opts, args = p.parse_args()
+    args = sys.argv[1:]
 
     if len(args) == 0:
         usage()
@@ -48,7 +46,6 @@ def main():
         sys.exit(1)
 
     cmd = CommandType.commands[command](args[1:])
-    cmd.cluster = opts.cluster
     cmd.do()
     print "done."
 

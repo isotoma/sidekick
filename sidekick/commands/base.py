@@ -78,8 +78,8 @@ class Command(object):
             yield self.get_environment(env)
 
     def get_current_cluster(self):
-        if self.cluster:
-            return self.get_cluster(self.cluster)
+        if self.options.cluster:
+            return self.get_cluster(self.options.cluster)
 
         path = ["/"] + list(os.getcwd().split(os.path.sep)) + ["Sidekick"]
         while path and not os.path.exists(os.path.join(*path)):
@@ -112,3 +112,5 @@ class ProjectCommand(Command):
     def __init__(self, args):
         super(ProjectCommand, self).__init__(args)
 
+    def setup_optparse(self, parser, args):
+        parser.add_option("-c", "--cluster")
