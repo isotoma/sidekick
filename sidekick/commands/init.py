@@ -30,6 +30,9 @@ class Init(Command):
         if self.registry.contains(self.args[0]):
             raise RuntimeError("That project is already registered")
 
+        if not self.environments.contains(self.args[1]):
+            raise RuntimeError("The environment '%s' is not defined" % self.args[1])
+
         sidekick_file = os.path.abspath("Sidekick")
 
         self.registry.register(self.args[0], self.args[1], sidekick_file)
