@@ -23,12 +23,13 @@ class InitEnv(Command):
 
 
     def setup_optparse(self, parser, args):
+        parser.add_option("-p", "--provider")
         args.append("name")
 
     def do(self):
         if self.environments.contains(self.args[0]):
             raise RuntimeError("That environment is already registered")
 
-        self.environments.register(self.args[0], "fake", {})
+        self.environments.register(self.args[0], self.opts.provider, {})
 
 
