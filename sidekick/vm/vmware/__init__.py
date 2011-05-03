@@ -48,27 +48,28 @@ class Provider(BaseProvider):
 
     def __init__(self, config):
         self.handle = None
+        self.config = config
 
     def provide(self, machine):
         if not self.handle:
             self.connect()
 
-        if not os.path.exists(machine.name):
-            base_path = ImageRegistry().get_image(machine.base)
+        if not os.path.exists(machine['name']):
+            base_path = ImageRegistry().get_image(machine['base'])
 
             if os.path.isdir(base_path):
                 vmxes = glob.glob(os.path.join(base_path, "*.vmx"))
 
                 if not vmxes:
-                    raise RuntimeError("%s is not a valid base image" % machine.base)
+                    raise RuntimeError("%s is not a valid base image" % machine['base'])
 
                 base_path = vmxes[0]
 
             print "VM doesnt exit - cloning..."
             base = self.open(base_path)
-            base.clone(machine.name)
+            base.clone(machine['name'])
 
-        return self.open(machine.name)
+        return self.open(machine['name'])
 
     def open(self, vmx):
         vm = VirtualMachine(self.handle, vmx, default_powerop_start=self.default_powerop_start)
