@@ -24,45 +24,29 @@ class YaybuProvisioner(Provisioner):
 
     @staticmethod
     def can_provision(machine):
-        terms = ("yaybu", "recipes", "resources")
-
-        print machine.config, machine.project.config
-
-        for term in terms:
-            if term in machine.config or term in machine.project.config:
-                return True
+        if "yaybu" in machine.config:
+            return True
+        return False
 
     def provision(self):
         conf = Config()
 
-        for recipe in self.machine.project.config.get("recipes", []):
-            config.load_uri(recipe)
+        recipe = self.machine.config["yaybu"]["recipe"]
+        conf.load_uri(recipe)
 
-        for recipe in self.machine.config.get("recipes", []):
-            config.load_uri(recipe)
-
-        yb = self.machine.project.config.get("yaybu", None)
-        if yb:
-            s = StringIO.StringIO(dump(yb))
-            conf.load(s)
-
-        yb = self.machine.config.get("yaybu", {})
-        if yb:
-            s = StringIO.StringIO(dump(yb))
-            conf.load(s)
-
-        config = conf.get()
-        config.setdefault("sidekick", {}).update({
+        sk = dict(sidekick={
             "primaryip": self.machine.get_ip(),
             })
+        conf.load(StringIO.StringIO(dump(sk)))
 
+        config = conf.get()
         with open("foo.yay", "w") as f:
             f.write(dump(config))
 
         class opts:
             log_level = "info"
             logfile = "-"
-            host = "%s@%s:%s" % self.machine.vm.get_ssh_details()
+            host = "%s@%s:%s" % self.machine.get_ssh_details()
             user = "root"
             ypath = []
             simulate = False

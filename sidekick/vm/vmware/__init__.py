@@ -66,13 +66,13 @@ class Provider(BaseProvider):
                 base_path = vmxes[0]
 
             print "VM doesnt exit - cloning..."
-            base = self.open(base_path)
+            base = self.open({"name": base_path})
             base.clone(machine['name'])
 
-        return self.open(machine['name'])
+        return self.open(machine)
 
-    def open(self, vmx):
-        vm = VirtualMachine(self.handle, vmx, default_powerop_start=self.default_powerop_start)
+    def open(self, config):
+        vm = VirtualMachine(config, self.handle, default_powerop_start=self.default_powerop_start)
         vm.open()
         return vm
 
@@ -122,9 +122,11 @@ class ViServerProvider(Provider):
 
 class VirtualMachine(BaseMachine):
 
-    def __init__(self, host, path, default_powerop_start=low.VIX_VMPOWEROP_NORMAL):
+    def __init__(self, config, host, default_powerop_start=low.VIX_VMPOWEROP_NORMAL):
+        BaseMachine.__init__(self, config)
+
         self.host = host
-        self.path = path
+        self.path = config["name"]
         self.vm = None
         self.default_powerop_start = default_powerop_start
         self.ip = None

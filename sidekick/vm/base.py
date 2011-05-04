@@ -38,6 +38,9 @@ class BaseProvider(object):
 
 class BaseMachine(object):
 
+    def __init__(self, config):
+        self.config = config
+
     def provision(self):
         #if not self.is_running():
         #    raise errors.VmNotRunning()
@@ -45,11 +48,11 @@ class BaseMachine(object):
         print "Provisioning vm..."
 
         p = None
-        if "provisioner" in self.project.config:
+        if "provisioner" in self.config:
             try:
-                p = ProvisionerType.provisioners[self.project.config["provisioner"]]
+                p = ProvisionerType.provisioners[self.config["provisioner"]]
             except KeyError:
-                raise RuntimeError("There is no such provisioner: '%s'" % self.project.config["provisioner"])
+                raise RuntimeError("There is no such provisioner: '%s'" % self.config["provisioner"])
         else:
             for p in ProvisionerType.provisioners.values():
                 if p.can_provision(self):
