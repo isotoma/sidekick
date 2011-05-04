@@ -15,16 +15,6 @@
 
 from ctypes import *
 
-try:
-    # if on Windows, may need to change following to use WinDLL instead of CDLL
-    #vix = CDLL('vix.dll')
-    vix = CDLL('/usr/lib/vmware-vix/libvixAllProducts.so')
-except OSError:
-    vix = None
-
-if vix:
-    setup_functions(vix)
-
 # user defined types
 VixHandle = c_int
 VixHandleType = c_int
@@ -331,4 +321,15 @@ def setup_functions(vix):
     vix.VixSnapshot_GetChild.argtypes = [VixHandle,c_int,POINTER(VixHandle)]
     vix.VixSnapshot_GetParent.restype = VixError
     vix.VixSnapshot_GetParent.argtypes = [VixHandle,POINTER(VixHandle)]
+
+try:
+    # if on Windows, may need to change following to use WinDLL instead of CDLL
+    #vix = CDLL('vix.dll')
+    vix = CDLL('/usr/lib/vmware-vix/libvixAllProducts.so')
+except OSError:
+    vix = None
+
+if vix:
+    setup_functions(vix)
+
 
