@@ -12,11 +12,8 @@ Contents:
    :maxdepth: 2
 
    intro
-   commands
+   quickstart
    environments
-     environments/vmware
-     environments/virtualbox
-     environments/brightbox
 
 
 Indices and tables
