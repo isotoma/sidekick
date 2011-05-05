@@ -4,3 +4,4 @@ bin/
 develop-eggs/
 eggs/
 *.pyc
+docs/_build

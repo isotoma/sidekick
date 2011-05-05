@@ -11,6 +11,14 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   intro
+   commands
+   environments
+     environments/vmware
+     environments/virtualbox
+     environments/brightbox
+
+
 Indices and tables
 ==================
 
