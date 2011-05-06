@@ -15,7 +15,8 @@ Contents:
    intro
    quickstart
    environments
-
+   clusters
+   commands
 
 Indices and tables
 ==================
