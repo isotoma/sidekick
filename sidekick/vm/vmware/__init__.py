@@ -92,7 +92,6 @@ class Provider(BaseProvider):
             self.handle = None
 
 
-
 class WorkstationProvider(Provider):
     name = "vmware"
 
@@ -294,4 +293,11 @@ class VirtualMachine(BaseMachine):
     def release(self):
         low.vix.Vix_ReleaseHandle(self.vm)
         self.vm = None
+
+    def destroy(self):
+        self.power_off()
+
+        err = low.vix.VixVM_Delete(self.vm, low.VIX_VMDELETE_DISK_FILES)
+        if err != low.VIX_OK:
+            raise errors.ErrorType.get(err)
 
