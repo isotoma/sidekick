@@ -12,17 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+from sidekick.commands.base import ProjectCommand
 
-from sidekick.commands.base import CommandType
-from sidekick.commands import (
-    buildbase,
-    deploy,
-    destroy,
-    down,
-    init,
-    initenv,
-    nc,
-    ssh,
-    up,
-    )
+class Destroy(ProjectCommand):
+
+    """ Destroy a cluster, totally removing any data on it in the process """
+
+    name = "destroy"
+
+    def do(self):
+        cluster = self.get_current_cluster()
+
 
