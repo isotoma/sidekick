@@ -23,5 +23,5 @@ class Destroy(ProjectCommand):
 
     def do(self):
         cluster = self.get_current_cluster()
-
+        cluster.destroy()
 

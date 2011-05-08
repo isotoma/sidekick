@@ -38,3 +38,7 @@ class Cluster(object):
         for node in config.get("nodes", []):
             yield self._get_machine(node)
 
+    def destroy(self):
+        for node in self.get_nodes():
+            node.destroy()
+
