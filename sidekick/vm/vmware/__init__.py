@@ -200,6 +200,9 @@ class VirtualMachine(BaseMachine):
         else:
             return "meh-fixme, %d" % powerstate
 
+    def is_running(self):
+        return self.get_powerstate() in ("running", "nearly-running", "powering-on")
+
     def open(self):
         job = Job(low.vix.VixVM_Open(self.host, self.path, None, None))
         self.vm = low.VixHandle()
@@ -295,9 +298,9 @@ class VirtualMachine(BaseMachine):
         self.vm = None
 
     def destroy(self):
-        self.power_off()
+        if self.is_running():
+            self.power_off()
 
-        err = low.vix.VixVM_Delete(self.vm, low.VIX_VMDELETE_DISK_FILES)
-        if err != low.VIX_OK:
-            raise errors.ErrorType.get(err)
+        job = Job(low.vix.VixVM_Delete(self.vm, low.VIX_VMDELETE_DISK_FILES, None, None))
+        job.wait(low.VIX_PROPERTY_NONE)
 
