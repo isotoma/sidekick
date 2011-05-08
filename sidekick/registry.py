@@ -51,6 +51,10 @@ class BaseRegistry(object):
     def get(self, name):
         return self.index[name]
 
+    def delete(self, name):
+        del self.index[name]
+        self.save()
+
 
 class Instances(BaseRegistry):
 
@@ -72,6 +76,14 @@ class Instances(BaseRegistry):
             }
 
         self.save()
+
+    def delete(self, name):
+        if self.contains(name):
+            path = self.get(name)["cached-sidekick-file"]
+            if os.path.exists(path):
+                os.unlink(path)
+
+        super(Instances, self).delete(name)
 
 
 class Environments(BaseRegistry):

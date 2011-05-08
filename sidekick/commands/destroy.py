@@ -25,3 +25,4 @@ class Destroy(ProjectCommand):
         cluster = self.get_current_cluster()
         cluster.destroy()
 
+        self.registry.delete(cluster.name)
