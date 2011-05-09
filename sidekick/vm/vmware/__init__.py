@@ -54,7 +54,10 @@ class Provider(BaseProvider):
         if not self.handle:
             self.connect()
 
-        if not os.path.exists(machine['name']):
+        vmwaredir = os.path.join(os.environ.get('XDG_DATA_HOME', os.path.expanduser('~/.local/share')), "sidekick", "vmware")
+        vmpath = os.path.join(vmwaredir, machine["name"], "%s.vmx" % machine["name"])
+
+        if not os.path.exists(vmpath):
             base_path = ImageRegistry().get_image(machine['base'])
 
             if os.path.isdir(base_path):
@@ -66,13 +69,13 @@ class Provider(BaseProvider):
                 base_path = vmxes[0]
 
             print "VM doesnt exit - cloning..."
-            base = self.open({"name": base_path})
-            base.clone(machine['name'])
+            base = self.open(base_path, {"name": base_path})
+            base.clone(vmpath)
 
-        return self.open(machine)
+        return self.open(vmpath, machine)
 
-    def open(self, config):
-        vm = VirtualMachine(config, self.handle, default_powerop_start=self.default_powerop_start)
+    def open(self, vmpath, config):
+        vm = VirtualMachine(vmpath, config, self.handle, default_powerop_start=self.default_powerop_start)
         vm.open()
         return vm
 
@@ -121,14 +124,15 @@ class ViServerProvider(Provider):
 
 class VirtualMachine(BaseMachine):
 
-    def __init__(self, config, host, default_powerop_start=low.VIX_VMPOWEROP_NORMAL):
+    def __init__(self, path, config, host, default_powerop_start=low.VIX_VMPOWEROP_NORMAL):
         BaseMachine.__init__(self, config)
 
         self.host = host
-        self.path = config["name"]
+        self.path = path
         self.vm = None
         self.default_powerop_start = default_powerop_start
         self.ip = None
+        self.config = config
 
     def get_mac(self):
         if not self.vm:
