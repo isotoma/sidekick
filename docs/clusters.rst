@@ -31,7 +31,7 @@ it to make VM's. This lets us have a few instances of the same project running.
 
 To actually turn this into a running cluster you can::
 
-    sidekick cluster define mycluster
+    sidekick define mycluster
     sidekick up
 
 
@@ -40,5 +40,9 @@ Deleting old clusters
 
 You can delete old clusters with the destroy command::
 
-    sidekick cluster destroy mycluter
+    sidekick destroy
+
+If you want to destroy a specific cluster, you can do so by specifying the cluster option::
+
+    sidekick destroy -c mycluter
 
