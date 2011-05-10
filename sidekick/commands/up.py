@@ -22,6 +22,14 @@ class Up(ProjectCommand):
     name = "up"
 
     def do(self):
+        try:
+            cluster = self.get_current_cluster()
+        except RuntimeError:
+            sidekick_file = os.path.abspath("Sidekick")
+            self.registry.register(os.getcwd(), self.environments.keys()[0], sidekick_file)
+
+            cluster = self.get_current_cluster()
+
         for node in self.get_current_cluster().get_nodes():
             node.power_on()
             node.provision()
