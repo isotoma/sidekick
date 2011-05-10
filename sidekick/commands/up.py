@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import os
 from sidekick.commands.base import ProjectCommand
 
 class Up(ProjectCommand):
@@ -26,7 +26,7 @@ class Up(ProjectCommand):
             cluster = self.get_current_cluster()
         except RuntimeError:
             sidekick_file = os.path.abspath("Sidekick")
-            self.registry.register(os.getcwd(), self.environments.keys()[0], sidekick_file)
+            self.registry.register(os.getcwd(), self.environments.all()[0], sidekick_file)
 
             cluster = self.get_current_cluster()
 
