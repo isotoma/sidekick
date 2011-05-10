@@ -97,6 +97,10 @@ echo Installing yaybu
 chroot $1 apt-get install -y -q rsyslog python-setuptools python-yaybu
 """
 
+firstboot = """
+#! /bin/sh
+dhclient eth0
+"""
 
 class BuildBase(Command):
 
@@ -129,6 +133,7 @@ class BuildBase(Command):
 
         self.set_arch()
         self.prepare_execscript()
+        self.prepare_firstboot()
         self.build()
 
     def set_arch(self):
@@ -151,6 +156,13 @@ class BuildBase(Command):
         f.close()
         os.chmod(f.name, 0755)
         self.vmb_options['execscript'] = f.name
+
+    def prepare_firstboot(self):
+        f = tempfile.NamedTemporaryFile(delete=False, prefix="/var/tmp/")
+        f.write(firstboot)
+        f.close()
+        os.chmod(f.name, 0755)
+        self.vmb_options['firstboot'] = f.name
 
     def build(self):
         optstring = []
