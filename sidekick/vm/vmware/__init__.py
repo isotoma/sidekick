@@ -14,7 +14,7 @@
 
 
 import os, shutil, time, glob
-from ctypes import byref, string_at, c_char_p #, create_string_buffer
+from ctypes import byref, string_at, c_char_p, c_int #, create_string_buffer
 
 from sidekick import util
 from sidekick.images import ImageRegistry
@@ -265,11 +265,29 @@ class VirtualMachine(BaseMachine):
         job = Job(low.vix.VixVM_PowerOff(self.vm, low.VIX_VMPOWEROP_NORMAL, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
 
-    def snapshot(self):
-        pass
+    def snapshot(self, name=None, description=None):
+        job = Job(low.vix.VixVM_CreateSnapshot(self.vm, name, description, low.VIX_SNAPSHOT_INCLUDE_MEMORY, low.VIX_INVALID_HANDLE, None, None))
+        job.wait(low.VIX_PROPERTY_NONE)
 
     def rollback(self):
-        pass
+        num_snapshots = c_int()
+        err = low.vix.VixVM_GetNumRootSnapshots(self.vm, byref(num_snapshots))
+        if err != low.VIX_OK:
+            raise errors.ErrorType.get(err)
+
+        if num_snapshots.value == 0:
+            raise RuntimeError("There are no snapshots")
+
+        snapshot = low.VixHandle()
+
+        err = low.vix.VixVM_GetRootSnapshot(self.vm, num_snapshots.value-1, byref(snapshot))
+        if err != low.VIX_OK:
+            raise errors.ErrorType.get(err)
+
+        job = Job(low.vix.VixVM_RevertToSnapshot(self.vm, snapshot, self.default_powerop_start, low.VIX_INVALID_HANDLE, None, None))
+        job.wait(low.VIX_PROPERTY_NONE)
+
+        low.vix.Vix_ReleaseHandle(snapshot)
 
     def _native_clone(self, path):
         snapshot = low.VixHandle()
