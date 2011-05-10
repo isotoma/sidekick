@@ -38,11 +38,9 @@ class Ssh(ProjectCommand):
 
         command = ["ssh", "-A"]
 
-        # if deploy_user:
-        #     command.extend(['-l', deploy_user])
+        user, host, port = node.get_ssh_details()
 
-        command.append(node.get_ip())
-
+        command.extend(["-l", user, "-p", str(port), host])
         os.execv("/usr/bin/ssh", command)
 
 
