@@ -265,6 +265,12 @@ class VirtualMachine(BaseMachine):
         job = Job(low.vix.VixVM_PowerOff(self.vm, low.VIX_VMPOWEROP_NORMAL, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
 
+    def snapshot(self):
+        pass
+
+    def rollback(self):
+        pass
+
     def _native_clone(self, path):
         snapshot = low.VixHandle()
         #err = low.vix.VixVM_GetCurrentSnapshot(self.vm, byref(snapshot))

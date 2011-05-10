@@ -13,18 +13,15 @@
 # limitations under the License.
 
 
-from sidekick.commands.base import CommandType
-from sidekick.commands import (
-    buildbase,
-    define,
-    deploy,
-    destroy,
-    down,
-    initenv,
-    nc,
-    rollback,
-    snapshot,
-    ssh,
-    up,
-    )
+from sidekick.commands.base import ProjectCommand
+
+class Rollback(ProjectCommand):
+
+    """ Rollback all nodes in this cluster """
+
+    name = "rollback"
+
+    def do(self):
+        for node in self.get_current_cluster().get_nodes():
+            node.rollback()
 
