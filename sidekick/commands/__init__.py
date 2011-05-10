@@ -16,10 +16,10 @@
 from sidekick.commands.base import CommandType
 from sidekick.commands import (
     buildbase,
+    define,
     deploy,
     destroy,
     down,
-    init,
     initenv,
     nc,
     ssh,

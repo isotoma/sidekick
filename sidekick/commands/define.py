@@ -17,9 +17,9 @@ from sidekick.commands.base import Command
 
 class Init(Command):
 
-    """ Generate a Sidekick file in the current directory """
+    """ Define a new cluster """
 
-    name = "init"
+    name = "define"
 
 
     def setup_optparse(self, parser, args):
