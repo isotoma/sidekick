@@ -44,7 +44,8 @@ class Provider(BaseProvider):
     hostport = 0
     username = ""
     password = ""
-    default_powerop_start = low.VIX_VMPOWEROP_LAUNCH_GUI
+    #default_powerop_start = low.VIX_VMPOWEROP_LAUNCH_GUI
+    default_powerop_start = low.VIX_VMPOWEROP_NORMAL
 
     def __init__(self, config):
         self.handle = None
