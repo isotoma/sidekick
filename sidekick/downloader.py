@@ -37,7 +37,8 @@ class Download(object):
             cb = self.feedback
 
         urllib.urlretrieve(self.url, self.destination, cb)
-        self.pb.finish()
+        if self.pb:
+            self.pb.finish()
 
 
 if __name__ == "__main__":
