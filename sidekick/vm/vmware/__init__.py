@@ -47,6 +47,18 @@ class Provider(BaseProvider):
     #default_powerop_start = low.VIX_VMPOWEROP_LAUNCH_GUI
     default_powerop_start = low.VIX_VMPOWEROP_NORMAL
 
+    @classmethod
+    def get_defaults(cls):
+        if not low.vix:
+            return {}
+
+        return {
+            "vmware": {
+                "name": "vmware",
+                "type": "vmware",
+                }
+            }
+
     def __init__(self, config):
         self.handle = None
         self.config = config

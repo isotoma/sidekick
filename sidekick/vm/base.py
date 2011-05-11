@@ -30,10 +30,21 @@ class ProviderType(type):
 
         return cls
 
+    @classmethod
+    def get_defaults(cls):
+        defaults = {}
+        for p in cls.providers.values():
+            defaults.update(p.get_defaults())
+        return defaults
+
 
 class BaseProvider(object):
 
     __metaclass__ = ProviderType
+
+    @classmethod
+    def get_defaults(self):
+        return {}
 
 
 class BaseMachine(object):

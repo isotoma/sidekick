@@ -25,7 +25,7 @@ import yay
 
 class BaseRegistry(object):
 
-    def __init__(self):
+    def __init__(self, defaults_fn=lambda: {}):
         datadir = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
         self.dotdir = os.path.join(datadir, "sidekick")
         self.registry = os.path.join(self.dotdir, "registry")
@@ -37,7 +37,8 @@ class BaseRegistry(object):
         if os.path.exists(self.index_file):
             self.index = yay.load_uri(self.index_file)
         else:
-            self.index = {}
+            self.index = defaults_fn()
+            self.save()
 
     def save(self):
         open(self.index_file, "w").write(yay.dump(self.index))
