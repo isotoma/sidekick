@@ -18,6 +18,7 @@ Main entry point. Finds a Command object and hands control over to it.
 
 import sys, optparse, os
 
+from sidekick.errors import SidekickError
 from sidekick.commands import CommandType
 
 def usage():
