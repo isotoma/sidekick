@@ -17,7 +17,7 @@ import os
 
 from sidekick.errors import SidekickError
 from sidekick.progress import Progress as BaseProgress
-from sidekick.vm import BaseProvider
+from sidekick.vm import BaseProvider, BaseMachine
 
 class Provider(BaseProvider):
 
@@ -136,7 +136,7 @@ class Session(object):
             self.session = None
 
 
-class VirtualMachine(object):
+class VirtualMachine(BaseMachine):
 
     username = "sidekick"
     password = "sidekick"
