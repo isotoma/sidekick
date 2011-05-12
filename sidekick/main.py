@@ -46,6 +46,12 @@ def main():
         sys.exit(1)
 
     cmd = CommandType.commands[command](args[1:])
-    cmd.do()
+
+    try:
+        cmd.do()
+    exception SidekickError, e:
+        print e.args[0]
+        sys.exit(1)
+
     print "done."
 

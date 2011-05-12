@@ -15,6 +15,7 @@
 
 import os, sys, optparse
 
+from sidekick.errors import SidekickError
 from sidekick.cluster import Cluster
 from sidekick.registry import Instances, Environments
 from sidekick.vm import ProviderType
@@ -29,7 +30,7 @@ class CommandType(type):
         command = new_attrs.get("name", None)
         if command:
             if command in meta.commands:
-                raise RuntimeError("Command '%s' was already defined")
+                raise SidekickError("Command '%s' was already defined")
             meta.commands[command] = cls
 
         return cls
@@ -86,13 +87,13 @@ class Command(object):
             path = path[:-2] + ["Sidekick"]
 
         if not os.path.exists(os.path.join(*path)):
-            raise RuntimeError("You did not specify a cluster and there is no Sidekick in cwd to look one up")
+            raise SidekickError("You did not specify a cluster and there is no Sidekick in cwd to look one up")
 
         for cluster in self.get_clusters():
             if cluster.config['sidekick-file'] == os.path.join(*path):
                 return cluster
 
-        raise RuntimeError("You failed to specify a cluster and one could not be found based on cwd.")
+        raise SidekickError("You failed to specify a cluster and one could not be found based on cwd.")
 
     def get_cluster(self, name):
         cluster = self.registry.get(name)

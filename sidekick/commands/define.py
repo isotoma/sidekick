@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+from sidekick.errors import SidekickError
 from sidekick.commands.base import Command
 
 class Init(Command):
@@ -28,10 +29,10 @@ class Init(Command):
 
     def do(self):
         if self.registry.contains(self.args[0]):
-            raise RuntimeError("That project is already registered")
+            raise SidekickError("That project is already registered")
 
         if not self.environments.contains(self.args[1]):
-            raise RuntimeError("The environment '%s' is not defined" % self.args[1])
+            raise SidekickError("The environment '%s' is not defined" % self.args[1])
 
         sidekick_file = os.path.abspath("Sidekick")
 

@@ -14,6 +14,8 @@
 
 from sidekick.provisioners import ProvisionerType
 
+from sidekick.errors import SidekickError
+
 
 class ProviderType(type):
 
@@ -24,7 +26,7 @@ class ProviderType(type):
 
         if "name" in attrs:
             if attrs["name"] in meta.providers:
-                raise RuntimeError("Provider '%s' already defined" % attrs['name'])
+                raise SidekickError("Provider '%s' already defined" % attrs['name'])
 
             meta.providers[attrs["name"]] = cls
 
@@ -63,13 +65,13 @@ class BaseMachine(object):
             try:
                 p = ProvisionerType.provisioners[self.config["provisioner"]]
             except KeyError:
-                raise RuntimeError("There is no such provisioner: '%s'" % self.config["provisioner"])
+                raise SidekickError("There is no such provisioner: '%s'" % self.config["provisioner"])
         else:
             for p in ProvisionerType.provisioners.values():
                 if p.can_provision(self):
                     break
             else:
-                raise RuntimeError("Cannot find a suitable provisioner")
+                raise SidekickError("Cannot find a suitable provisioner")
 
         # Actually do this thing
         p(self).provision()

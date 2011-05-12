@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-class BaseError(Exception):
+class SidekickError(RuntimeError):
     pass
 
-class NoProjectFile(BaseError):
-    """ No project file could be located """
-    pass

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+from sidekick.errors import SidekickError
 from sidekick.commands.base import ProjectCommand
 
 class Up(ProjectCommand):
@@ -24,7 +25,7 @@ class Up(ProjectCommand):
     def do(self):
         try:
             cluster = self.get_current_cluster()
-        except RuntimeError:
+        except SidekickError:
             sidekick_file = os.path.abspath("Sidekick")
             self.registry.register(os.getcwd(), self.environments.all()[0], sidekick_file)
 

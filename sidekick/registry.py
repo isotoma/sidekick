@@ -23,6 +23,8 @@ file.
 import os
 import yay
 
+from sidekick.errors import SidekickError
+
 class BaseRegistry(object):
 
     def __init__(self, defaults_fn=lambda: {}):
@@ -63,7 +65,7 @@ class Instances(BaseRegistry):
 
     def register(self, name, env, details):
         if self.contains(name):
-            raise RuntimeError("'%s' is already defined" % name)
+            raise SidekickError("'%s' is already defined" % name)
 
         cached_path = os.path.join(self.registry, "%s.yay" % name)
         cached = yay.dump(yay.load_uri(details))
@@ -93,7 +95,7 @@ class Environments(BaseRegistry):
 
     def register(self, name, type, config):
         if self.contains(name):
-            raise RuntimeError("'%s' is already defined")
+            raise SidekickError("'%s' is already defined")
 
         env = {
             "name": name,

@@ -15,6 +15,7 @@
 
 import os
 
+from sidekick.errors import SidekickError
 from sidekick.progress import Progress as BaseProgress
 from sidekick.vm import BaseProvider
 
@@ -125,7 +126,7 @@ class Session(object):
         if self.session.state != desired_session_state:
             #self.session.close()
             self.session = None
-            raise RuntimeError("Session to '%s' in wrong state: %s" % (self.macine.name, self.session.state))
+            raise SidekickError("Session to '%s' in wrong state: %s" % (self.macine.name, self.session.state))
 
         return self.session
 

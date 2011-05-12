@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from sidekick.errors import SidekickError
 from sidekick.commands.base import Command
 
 class InitEnv(Command):
@@ -28,7 +28,7 @@ class InitEnv(Command):
 
     def do(self):
         if self.environments.contains(self.args[0]):
-            raise RuntimeError("That environment is already registered")
+            raise SidekickError("That environment is already registered")
 
         self.environments.register(self.args[0], self.options.provider, {})
 

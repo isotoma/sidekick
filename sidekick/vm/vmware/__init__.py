@@ -16,6 +16,7 @@
 import os, shutil, time, glob
 from ctypes import byref, string_at, c_char_p, c_int #, create_string_buffer
 
+from sidekick.errors import SidekickError
 from sidekick import util
 from sidekick.images import ImageRegistry
 from sidekick.vm import BaseProvider, BaseMachine
@@ -77,7 +78,7 @@ class Provider(BaseProvider):
                 vmxes = glob.glob(os.path.join(base_path, "*.vmx"))
 
                 if not vmxes:
-                    raise RuntimeError("%s is not a valid base image" % machine['base'])
+                    raise SidekickError("%s is not a valid base image" % machine['base'])
 
                 base_path = vmxes[0]
 
@@ -120,7 +121,7 @@ class WorkstationProvider(Provider):
             try:
                 Provider.connect(self)
             except errors.WRAPPER_PLAYER_NOT_INSTALLED:
-                raise RuntimeError("Cannot find Vmware Workstation or Player Environment")
+                raise SidekickError("Cannot find Vmware Workstation or Player Environment")
 
 
 class ViServerProvider(Provider):
@@ -263,7 +264,7 @@ class VirtualMachine(BaseMachine):
 
     def power_on(self):
         if self.approaching("running"):
-            raise RuntimeError("VM Already Running")
+            raise SidekickError("VM Already Running")
 
         job = Job(low.vix.VixVM_PowerOn(self.vm, self.default_powerop_start, low.VIX_INVALID_HANDLE, None, None))
         job.wait(low.VIX_PROPERTY_NONE)
@@ -289,7 +290,7 @@ class VirtualMachine(BaseMachine):
             raise errors.ErrorType.get(err)
 
         if num_snapshots.value == 0:
-            raise RuntimeError("There are no snapshots")
+            raise SidekickError("There are no snapshots")
 
         snapshot = low.VixHandle()
 
