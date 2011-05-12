@@ -49,7 +49,7 @@ def main():
 
     try:
         cmd.do()
-    exception SidekickError, e:
+    except SidekickError, e:
         print e.args[0]
         sys.exit(1)
 
