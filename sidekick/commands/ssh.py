@@ -36,7 +36,9 @@ class Ssh(ProjectCommand):
         #if not vm.is_running():
         #    raise errors.VmNotRunning()
 
-        command = ["ssh", "-A"]
+        command = ["ssh", "-A", "-o", "UserKnownHostsFile /dev/null", "-o", "StrictHostKeyChecking no"]
+
+        #["-o", "IdentifyFile %s" % "path/to/key"]
 
         user, host, port = node.get_ssh_details()
 
