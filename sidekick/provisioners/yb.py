@@ -17,6 +17,7 @@ import StringIO
 from yay.config import Config, dump
 from yaybu.core.remote import RemoteRunner
 from sidekick.provisioners.base import Provisioner
+from sidekick.util import register_builtin_keys
 
 class YaybuProvisioner(Provisioner):
 
@@ -29,6 +30,8 @@ class YaybuProvisioner(Provisioner):
         return False
 
     def provision(self):
+        register_builtin_keys()
+
         conf = Config()
 
         recipe = self.machine.config["yaybu"]["recipe"]

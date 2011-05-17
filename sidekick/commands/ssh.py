@@ -17,6 +17,7 @@ import os
 
 from sidekick import errors
 from sidekick.commands.base import ProjectCommand
+from sidekick.util import register_builtin_keys
 
 class Ssh(ProjectCommand):
 
@@ -25,6 +26,8 @@ class Ssh(ProjectCommand):
     name = "ssh"
 
     def do(self):
+        register_builtin_keys()
+
         #FIXME: Pick a VM:
         #  - if there is more than 1 defined, must be specified
         #  - if there is only 1 defined, ssh into that
@@ -35,6 +38,7 @@ class Ssh(ProjectCommand):
 
         #if not vm.is_running():
         #    raise errors.VmNotRunning()
+
 
         command = ["ssh", "-A", "-o", "UserKnownHostsFile /dev/null", "-o", "StrictHostKeyChecking no"]
 

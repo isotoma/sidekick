@@ -1,6 +1,10 @@
 
 import time, os, re
 
+def register_builtin_keys():
+    path = os.path.join(os.path.dirname(__file__), "resources", "sidekick_rsa")
+    os.system("ssh-add %s" % path)
+
 def tail(path):
     #FIXME: Track inode num so we can survive logrotate
     st_size = os.stat(path).st_size
