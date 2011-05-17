@@ -123,6 +123,8 @@ class BuildBase(Command):
 
     def setup_optparse(self, p, a):
         p.add_option("-k", "--authorized-keys", action="store", default=os.path.expanduser("~/.ssh/id_rsa.pub"))
+        p.add_option("--shared", action="store_true",
+            help="Build a shared image (sidekick key over personal key)")
         p.add_option("-H", "--hypervisor", action="store", default="vmw6")
         p.add_option("-s", "--suite", action="store", default="lucid")
 
@@ -144,10 +146,16 @@ class BuildBase(Command):
             self.vmb_options["arch"] = "i386"
 
     def prepare_execscript(self):
+        if not os.path.exists(self.options.authorized_keys) or self.options.shared:
+            keys = os.path.join(os.path.dirname(__file__),
+                "..", "resources", "sidekick_rsa.pub")
+        else:
+            keys = self.options.authorized_keys
+
         f = tempfile.NamedTemporaryFile(delete=False, prefix="/var/tmp/")
         print >>f, postboot % {
             "suite": self.options.suite,
-            "authorized_keys": self.options.authorized_keys,
+            "authorized_keys": keys,
             "hypervisor": {
                 "vbox": virtualbox,
                 "vmw6": vmware,
