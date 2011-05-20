@@ -16,6 +16,7 @@
 import StringIO
 from yay.config import Config, dump
 from yaybu.core.remote import RemoteRunner
+from sidekick import util
 from sidekick.provisioners.base import Provisioner
 from sidekick.util import register_builtin_keys
 
@@ -38,6 +39,9 @@ class YaybuProvisioner(Provisioner):
         conf.load_uri(recipe)
 
         sk = dict(sidekick={
+            "host": {
+                "ips": dict(util.interfaces()),
+                },
             "primaryip": self.machine.get_ip(),
             })
         conf.load(StringIO.StringIO(dump(sk)))
@@ -56,5 +60,6 @@ class YaybuProvisioner(Provisioner):
             verbose = False
 
         r = RemoteRunner()
-        r.run(opts, ["foo.yay"])
+        rv = r.run(opts, ["foo.yay"])
 
+        print rv
