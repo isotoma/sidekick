@@ -40,7 +40,7 @@ class Provider(BaseProvider):
         machines = self.globl.getArray(self.vb, 'machines')
         for m in machines:
             if m.name == lookfor or m.id == lookfor:
-                return VirtualMachine(self, machine)
+                return VirtualMachine(machine, self, m)
 
         # FIXME: Would be nice to support this in future...
         #for m in machines:
@@ -88,7 +88,7 @@ class Provider(BaseProvider):
         # FIXME: Decide whether this is right...
         self.vb.registerMachine(m)
 
-        return VirtualMachine(self, machine)
+        return VirtualMachine(config, self, m)
 
     def connect(self):
         cwd = os.getcwd()
@@ -190,7 +190,9 @@ class VirtualMachine(BaseMachine):
     username = "sidekick"
     password = "sidekick"
 
-    def __init__(self, provider, machine):
+    def __init__(self, config, provider, machine):
+        super(VirtualMachine, self).__init__(config)
+
         self.provider = provider
 
         self.globl = provider.globl
