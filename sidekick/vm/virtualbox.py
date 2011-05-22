@@ -34,12 +34,20 @@ class Provider(BaseProvider):
         if not self.globl:
             self.connect()
 
-        lookfor = machine.name
+        lookfor = machine["name"]
 
         machines = self.globl.getArray(self.vb, 'machines')
-        for machine in machines:
-            if machine.name == lookfor or machine.id == lookfor:
+        for m in machines:
+            if m.name == lookfor or m.id == lookfor:
                 return VirtualMachine(self, machine)
+
+        # Must be a new one...
+        for m in machines:
+            if m.name == machine["base"] or m.id == machine["base"]:
+                base = VirtualMachine(self, {"name": machine["base"]})
+                break
+        else:
+            raise SidekickError("Unable to find base '%s'" % machine['base'])
 
     def connect(self):
         cwd = os.getcwd()
