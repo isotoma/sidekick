@@ -80,15 +80,18 @@ class Provider(BaseProvider):
                 raise SidekickError("Unable to find OS Type '%s'" % desired_ostype)
 
             m = self.vb.createMachine(vmpath, machine['name'], matching_ostype[0].id, "", False)
+            m.addStorageController("IDE Controller", self.const.StorageBus_IDE)
+            m.saveSettings()
+            self.vb.registerMachine(m)
+
+            m.attachDevice("IDE Controller", 0, 0,  self.const.DeviceType_HardDisk, target)
             m.saveSettings()
         else:
             print "opening"
             m = self.vb.openMachine(vmpath)
+            self.vb.registerMachine(m)
 
-        # FIXME: Decide whether this is right...
-        self.vb.registerMachine(m)
-
-        return VirtualMachine(config, self, m)
+        return VirtualMachine(machine, self, m)
 
     def connect(self):
         cwd = os.getcwd()
@@ -287,11 +290,11 @@ class VirtualMachine(BaseMachine):
         with Session(self.globl, self.machine) as s:
             s.console.powerDown()
 
-    def clone(self, path):
-        pass
+    def destroy(self):
+        medium = self.machine.unregister(self.const.CleanupMode_DetachAllReturnHardDisksOnly)
+        progress = self.machine.delete(medium)
+        Progress(self.globl, progress).do()
 
-    def release(self):
-        pass
 
 
 if __name__ == "__main__":
