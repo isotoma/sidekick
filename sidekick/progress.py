@@ -36,6 +36,8 @@ class Progress(object):
         sys.stdout.flush()
 
     def finish(self):
+        self.progress(self.upperbound)
+
         sys.stdout.write("\n")
         sys.stdout.flush()
 

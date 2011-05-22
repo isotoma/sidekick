@@ -150,6 +150,8 @@ class Progress(BaseProgress):
                 self.finish()
             raise
 
+        self.finish()
+
 
 class Session(object):
 
