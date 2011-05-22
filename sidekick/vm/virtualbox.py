@@ -18,6 +18,7 @@ import os
 from sidekick.errors import SidekickError
 from sidekick.progress import Progress as BaseProgress
 from sidekick.vm import BaseProvider, BaseMachine
+from sidekick.images import ImageRegistry
 
 class Provider(BaseProvider):
 
@@ -41,13 +42,53 @@ class Provider(BaseProvider):
             if m.name == lookfor or m.id == lookfor:
                 return VirtualMachine(self, machine)
 
-        # Must be a new one...
-        for m in machines:
-            if m.name == machine["base"] or m.id == machine["base"]:
-                base = VirtualMachine(self, {"name": machine["base"]})
-                break
+        # FIXME: Would be nice to support this in future...
+        #for m in machines:
+        #    if m.name == machine["base"] or m.id == machine["base"]:
+        #        base = VirtualMachine(self, {"name": machine["base"]})
+        #        break
+        #else:
+        #    raise SidekickError("Unable to find base '%s'" % machine['base'])
+
+        vmdir = os.path.join(os.environ.get('XDG_DATA_HOME', os.path.expanduser('~/.local/share')), "sidekick", "vbox")
+        vmpath = os.path.join(vmdir, machine["name"], "%s.box" % machine["name"])
+        vdipath = os.path.join(vmdir,  machine["name"], "%s.vdi" % machine["name"])
+
+        if not os.path.exists(vdipath):
+            base_path = ImageRegistry().get_image(machine['base'])
+
+            if os.path.isdir(base_path):
+                vdis = glob.glob(os.path.join(base_path, "*.vdi"))
+
+                if not vdis:
+                    raise SidekickError("%s is not a valid base image" % machine['base'])
+
+                base_path = vdis[0]
+
+            base = self.vb.openMedium(base_path, self.const.DeviceType_HardDisk, self.const.AccessMode_ReadOnly)
+            target = self.vb.createHardDisk("vdi", vdipath)
+            progress = base.cloneTo(target, self.const.MediumVariant_Standard, None)
+            Progress(self.globl, progress).do()
         else:
-            raise SidekickError("Unable to find base '%s'" % machine['base'])
+            target = self.vb.openMedium(vdipath, self.const.DeviceType_HardDisk, self.const.AccessMode_ReadOnly)
+
+        if not os.path.exists(vmpath):
+            desired_ostype = machine.get("os-type", "Ubuntu_64")
+
+            matching_ostype = [x for x in self.globl.getArray(self.vb, "guestOSTypes") if x.id.lower() == desired_ostype.lower()]
+            if len(matching_ostype) == 0:
+                raise SidekickError("Unable to find OS Type '%s'" % desired_ostype)
+
+            m = self.vb.createMachine(vmpath, machine['name'], matching_ostype[0].id, "", False)
+            m.saveSettings()
+        else:
+            print "opening"
+            m = self.vb.openMachine(vmpath)
+
+        # FIXME: Decide whether this is right...
+        self.vb.registerMachine(m)
+
+        return VirtualMachine(self, machine)
 
     def connect(self):
         cwd = os.getcwd()
