@@ -31,6 +31,20 @@ class Provider(BaseProvider):
     def __init__(self, config):
         self.globl = None
 
+    @classmethod
+    def get_defaults(cls):
+        try:
+            from vboxapi import VirtualBoxManager
+        except ImportError:
+            return {}
+
+        return {
+            "vbox": {
+                "name": "vbox",
+                "type": "virtualbox",
+                }
+            }
+
     def provide(self, machine):
         if not self.globl:
             self.connect()

@@ -20,7 +20,10 @@ The VMWare Workstation and Player support depends on the VIX API. This may need 
 VirtualBox
 ----------
 
-The VirtualBox support currently targets the 4.0 API and is primarily developed on OSX. Currently it doesn't take any parameters, but does need defining before it is available to your clusters::
+The VirtualBox support currently targets the 4.0 API and is primarily developed on OSX. Currently it doesn't take any parameters.
+
+The first time you run sidekick it will check for it and create a virtualbox environment automatically if possible. If you install
+virtualbox later you will need to define the environment before it is available to your clusters::
 
     sidekick env define virtualbox backend=virtualbox
 
