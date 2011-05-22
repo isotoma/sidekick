@@ -84,8 +84,9 @@ class Provider(BaseProvider):
             m.saveSettings()
             self.vb.registerMachine(m)
 
-            m.attachDevice("IDE Controller", 0, 0,  self.const.DeviceType_HardDisk, target)
-            m.saveSettings()
+            with Session(self.globl, m) as s:
+                s.machine.attachDevice("IDE Controller", 0, 0,  self.const.DeviceType_HardDisk, target)
+                s.machine.saveSettings()
         else:
             print "opening"
             m = self.vb.openMachine(vmpath)
@@ -186,6 +187,7 @@ class Session(object):
 
     def __exit__(self, *args):
         if self.session:
+            self.session.unlockMachine()
             #self.session.close()
             self.session = None
 
@@ -268,7 +270,7 @@ class VirtualMachine(BaseMachine):
                 break
         else:
             #FIXME: Need a better port allocator
-            self.ex_forward_port(22, 2222)
+            self.ex_forward_port(2222, 22)
             port = 2222
 
         return "sidekick", "localhost", port
