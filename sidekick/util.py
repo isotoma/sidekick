@@ -10,6 +10,9 @@ SIOCGIFCONF = 0x8912
 MAXBYTES = 8096
 
 def interfaces():
+    if platform.system() == "Darwin":
+        return
+
     arch = platform.architecture()[0]
 
     if arch == '32bit':
