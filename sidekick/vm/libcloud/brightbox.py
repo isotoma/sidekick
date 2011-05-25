@@ -1,8 +1,8 @@
 
 from time import sleep
 
-from libcloud.types import Provider
-from libcloud.providers import get_driver
+from libcloud.compute.types import Provider
+from libcloud.compute.providers import get_driver
 
 from sidekick.vm.base import BaseProvider, BaseMachine
 
