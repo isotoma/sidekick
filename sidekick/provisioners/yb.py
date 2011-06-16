@@ -58,6 +58,9 @@ class YaybuProvisioner(Provisioner):
             ypath = self.machine.config["yaybu"].get("path", [])
             simulate = False
             verbose = False
+            resume = True
+            no_resume = False
+            env_passthrough = []
 
         r = RemoteRunner()
         rv = r.run(opts, ["foo.yay"])
