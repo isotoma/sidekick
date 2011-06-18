@@ -31,7 +31,7 @@ class Up(ProjectCommand):
 
             cluster = self.get_current_cluster()
 
-        for node in self.get_current_cluster().get_nodes():
+        for node in cluster.get_nodes():
             node.power_on()
             node.provision()
 

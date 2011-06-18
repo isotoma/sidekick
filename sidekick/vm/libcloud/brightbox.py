@@ -1,17 +1,25 @@
 
 from time import sleep
 
-from libcloud.compute.types import Provider
+from libcloud.compute.types import Provider, NodeState
 from libcloud.compute.providers import get_driver
 
 from sidekick.vm.base import BaseProvider, BaseMachine
+from sidekick.errors import SidekickError
+
 
 POWERSTATES = {
-    0: "running",
+    NodeState.RUNNING: "running",
+    NodeState.REBOOTING: "waiting",
+    NodeState.TERMINATED: "terminated",
+    NodeState.PENDING: "waiting",
+    NodeState.UNKNOWN: "unknown",
     }
 
 
 class CloudProvider(BaseProvider):
+
+    name = "brightbox"
 
     def __init__(self, config):
         self.config = config
@@ -31,7 +39,7 @@ class CloudMachine(BaseMachine):
         self.node = None
 
     def _refresh_node(self):
-        nodes = filter(lambda x: x.id == self.config['id'], self.driver.list_nodes())
+        nodes = filter(lambda x: x.name == self.config['name'], self.driver.list_nodes())
         self.node = nodes[0] if nodes else None
 
     def _wait_for_boot(self):
@@ -54,25 +62,35 @@ class CloudMachine(BaseMachine):
 
     def get_powerstate(self):
         self._refresh_node()
+        if not self.node:
+            return "undefined"
         return POWERSTATES[self.node.state]
 
-    def power_on(self):
+    def get_ip(self):
         self._refresh_node()
-        if self.node:
+        return self.node.public_ip[0]
+
+    def power_on(self):
+        powerstate = self.get_powerstate()
+
+        if powerstate == "terminated":
+            raise SidekickError("A VM with the name '%s' already exists in a terminated state, cannot perform any operations on it" % self.config['name'])
+
+        if powerstate != "undefined":
             return
 
         print "Finding size (nano)"
-        size = filter(lambda x: x.id == 'typ-4nssg', bb.list_sizes())[0]
+        size = filter(lambda x: x.id == 'typ-4nssg', self.driver.list_sizes())[0]
 
-        print "Finding image (lucid 10.04 i686)"
-        image = filter(lambda x: x.id == 'img-hm6oj', bb.list_images())[0]
+        print "Finding image (lucid 10.04 server)"
+        image = filter(lambda x: x.id == 'img-4gqhs', self.driver.list_images())[0]
 
         self.node = self.driver.create_node(name=self.config['name'], size=size, image=image)
 
         self._wait_for_boot()
         self._assign_ip()
 
-    def power_off(self):
+    def destroy(self):
         self._refresh_node()
 
         if not self.node:
