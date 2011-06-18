@@ -23,20 +23,8 @@ incantations. I'll write better docs when this code is more useful.
 Current Status
 --------------
 
-Yaybu Sidekick is an experiment in using the VMWare VIX API and in using
-Yaybu as an API rather than as a tool. It's still too early to know if
-it will be useful.
-
-It currently targets:
-
-  * VMWare
-  * Yaybu
-
-It may gain support for:
-
-  * libcloud
-  * VirtualBox
-  * KVM (via libvirt)
+It has been working quite well with VMWare, and virtualbox and brightbox
+support is coming slong nicely.
 
 
 Credits
