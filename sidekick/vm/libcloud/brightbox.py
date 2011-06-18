@@ -70,6 +70,18 @@ class CloudMachine(BaseMachine):
         self._refresh_node()
         return self.node.public_ip[0]
 
+    def get_size(self):
+        print "Finding size"
+        size = filter(lambda x: x.id == 'typ-4nssg', self.driver.list_sizes())[0]
+        print "Found size:", size.name
+        return size
+
+    def get_image(self):
+        print "Finding image"
+        image = filter(lambda x: x.id == 'img-4gqhs', self.driver.list_images())[0]
+        print "Found image:", image.name
+        return image
+
     def power_on(self):
         powerstate = self.get_powerstate()
 
@@ -79,13 +91,10 @@ class CloudMachine(BaseMachine):
         if powerstate != "undefined":
             return
 
-        print "Finding size (nano)"
-        size = filter(lambda x: x.id == 'typ-4nssg', self.driver.list_sizes())[0]
-
-        print "Finding image (lucid 10.04 server)"
-        image = filter(lambda x: x.id == 'img-4gqhs', self.driver.list_images())[0]
-
-        self.node = self.driver.create_node(name=self.config['name'], size=size, image=image)
+        self.node = self.driver.create_node(
+            name=self.config['name'],
+            size=self.get_size(),
+            image=self.get_image())
 
         self._wait_for_boot()
         self._assign_ip()
