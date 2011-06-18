@@ -16,7 +16,7 @@
 Main entry point. Finds a Command object and hands control over to it.
 """
 
-import sys, optparse, os
+import sys, optparse, os, logging
 
 from sidekick.errors import SidekickError
 from sidekick.commands import CommandType
@@ -40,6 +40,8 @@ def main():
     if len(args) == 0:
         usage()
         sys.exit(1)
+
+    logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     command = args[0]
     if not command in CommandType.commands:

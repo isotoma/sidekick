@@ -1,4 +1,5 @@
 
+import logging
 from time import sleep
 
 from libcloud.compute.types import Provider, NodeState
@@ -34,6 +35,7 @@ class CloudProvider(BaseProvider):
 class CloudMachine(BaseMachine):
 
     def __init__(self, driver, config):
+        self.logger = logging.getLogger("sidekick.vm.libcloud.brightbox.CloudMachine")
         self.driver = driver
         self.config = config
         self.node = None
@@ -43,8 +45,11 @@ class CloudMachine(BaseMachine):
         self.node = nodes[0] if nodes else None
 
     def _wait_for_boot(self):
+        self.logger.debug("Waiting for boot")
         while self.get_powerstate() != "running":
+            self.logger.debug("Still waiting")
             sleep(1)
+        self.logger.debug("Booted")
 
     def _assign_ip(self):
         if self.node.public_ip:
@@ -71,24 +76,26 @@ class CloudMachine(BaseMachine):
         return self.node.public_ip[0]
 
     def get_size(self):
-        print "Finding size"
+        self.logger.debug("Finding size")
         size = filter(lambda x: x.id == 'typ-4nssg', self.driver.list_sizes())[0]
-        print "Found size:", size.name
+        self.logger.info("Found size: %s", size.name)
         return size
 
     def get_image(self):
-        print "Finding image"
+        self.logger.debug("Finding image")
         image = filter(lambda x: x.id == 'img-4gqhs', self.driver.list_images())[0]
-        print "Found image:", image.name
+        self.logger.info("Found image: %s", image.name)
         return image
 
     def power_on(self):
+        self.logger.debug("Asked to power on")
         powerstate = self.get_powerstate()
 
         if powerstate == "terminated":
             raise SidekickError("A VM with the name '%s' already exists in a terminated state, cannot perform any operations on it" % self.config['name'])
 
         if powerstate != "undefined":
+            self.logger.debug("Already powered on")
             return
 
         self.node = self.driver.create_node(
