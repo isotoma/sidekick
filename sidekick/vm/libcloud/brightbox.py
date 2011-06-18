@@ -1,9 +1,10 @@
 
-import logging
-from time import sleep
+import os, time, logging
 
 from libcloud.compute.types import Provider, NodeState
 from libcloud.compute.providers import get_driver
+from libcloud.compute.ssh import ParamikoSSHClient
+from libcloud.compute.deployment import Deployment
 
 from sidekick.vm.base import BaseProvider, BaseMachine
 from sidekick.errors import SidekickError
@@ -16,6 +17,60 @@ POWERSTATES = {
     NodeState.PENDING: "waiting",
     NodeState.UNKNOWN: "unknown",
     }
+
+
+class SSHClient(ParamikoSSHClient):
+    def connect(self):
+        conninfo = {'hostname': self.hostname,
+                    'port': self.port,
+                    'username': self.username,
+                    'password': self.password,
+                    'allow_agent': True,
+                    'look_for_keys': True}
+
+        if self.timeout:
+            conninfo['timeout'] = self.timeout
+
+        self.client.connect(**conninfo)
+        return True
+
+
+class ScriptDeployment(Deployment):
+    """
+    Runs an arbitrary Shell Script task.
+    """
+
+    def __init__(self, script, name=None, delete=False):
+        """
+        @type script: C{str}
+        @keyword script: Contents of the script to run
+
+        @type name: C{str}
+        @keyword name: Name of the script to upload it as, if not specified, a random name will be choosen.
+
+        @type delete: C{bool}
+        @keyword delete: Whether to delete the script on completion.
+        """
+        self.script = script
+        self.stdout = None
+        self.stderr = None
+        self.exit_status = None
+        self.delete = delete
+        self.name = name
+        if self.name is None:
+            self.name = "/root/deployment_%s.sh" % (os.urandom(4).encode('hex'))
+
+    def run(self, node, client):
+        """
+        Uploads the shell script and then executes it.
+
+        See also L{Deployment.run}
+        """
+        client.put(path=self.name, chmod=0755, contents=self.script)
+        self.stdout, self.stderr, self.exit_status = client.run(self.name)
+        if self.delete:
+            client.delete(self.name)
+        return node
 
 
 class CloudProvider(BaseProvider):
@@ -48,7 +103,7 @@ class CloudMachine(BaseMachine):
         self.logger.debug("Waiting for boot")
         while self.get_powerstate() != "running":
             self.logger.debug("Still waiting")
-            sleep(1)
+            time.sleep(1)
         self.logger.debug("Booted")
 
     def _assign_ip(self):
@@ -78,6 +133,9 @@ class CloudMachine(BaseMachine):
     def get_ip(self):
         self._refresh_node()
         return self.node.public_ip[0]
+
+    def get_ssh_details(self):
+        return "ubuntu", self.get_ip(), "22"
 
     def get_size(self):
         self.logger.debug("Finding size")
@@ -119,4 +177,18 @@ class CloudMachine(BaseMachine):
             return
 
         self.driver.destroy_node(self.node)
+
+    def run_script(self, script):
+        username, ip, port = self.get_ssh_details()
+
+        c = SSHClient(ip, port=int(port), username=username,
+            key=[open(os.path.expanduser("~/.ssh/id_rsa")).read()])
+
+        c.connect()
+
+        sd = ScriptDeployment(script, name="/home/%s/run_deployment" % username)
+        sd.run(self.node, c)
+
+        c.close()
+
 

@@ -22,6 +22,7 @@ setup(name='Sidekick',
           'setuptools',
           'yaybu',
           'apache-libcloud >= 0.5.0',
+          'paramiko',
       ],
       extras_require = {
           'test': ['testtools', 'discover', 'mock'],
