@@ -60,10 +60,10 @@ class CloudMachine(BaseMachine):
         unmapped = [ip for ip in self.driver.ex_list_cloud_ips() if not ip['server']]
         if unmapped:
             ip = unmapped[0]
-            self.logger.debug("Reusing %s", ip)
+            self.logger.debug("Reusing %s", ip['public_ip'])
         else:
             ip = self.driver.ex_create_cloud_ip()
-            self.logger.debug("Claimed new ip %s", ip)
+            self.logger.debug("Claimed new ip %s", ip['public_ip'])
 
         self.driver.ex_map_cloud_ip(ip['id'], self.node.extra['interfaces'][0]['id'])
 
