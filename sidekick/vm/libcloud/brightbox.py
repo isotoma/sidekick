@@ -52,14 +52,18 @@ class CloudMachine(BaseMachine):
         self.logger.debug("Booted")
 
     def _assign_ip(self):
+        self.logger.debug("Asked to assign ip")
         if self.node.public_ip:
+            self.logger.debug("Already assigned ip: %s", self.node.public_ip[0])
             return self.node.public_ip[0]
 
         unmapped = [ip for ip in self.driver.ex_list_cloud_ips() if not ip['server']]
         if unmapped:
             ip = unmapped[0]
+            self.logger.debug("Reusing %s", ip)
         else:
             ip = self.driver.ex_create_cloud_ip()
+            self.logger.debug("Claimed new ip %s", ip)
 
         self.driver.ex_map_cloud_ip(ip['id'], self.node.extra['interfaces'][0]['id'])
 
@@ -107,9 +111,11 @@ class CloudMachine(BaseMachine):
         self._assign_ip()
 
     def destroy(self):
-        self._refresh_node()
+        self.logger.debug("Asked to destroy")
+        powerstate = self.get_powerstate()
 
-        if not self.node:
+        if not self.node or powerstate == "terminated":
+            self.logger.debug("Already destroyed")
             return
 
         self.driver.destroy_node(self.node)
