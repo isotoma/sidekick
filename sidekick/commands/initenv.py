@@ -65,3 +65,20 @@ class List(Command):
 
         print ""
 
+
+class Delete(Command):
+
+    """ Delete an environment """
+
+    name = "delete"
+    parent = Environment
+
+    def setup_optparse(self, parser, args):
+        args.append("ENVIRONMENT")
+
+    def do(self):
+        if not self.args[0] in self.environments.all():
+            raise SidekickError("No such environment '%s'" % self.args[0])
+
+        self.environments.delete(self.args[0])
+
