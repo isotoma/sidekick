@@ -13,14 +13,23 @@
 # limitations under the License.
 
 from sidekick.errors import SidekickError
-from sidekick.commands.base import Command
+from sidekick.commands.base import RootNamespace, NamespaceCommand, Command
 
-class InitEnv(Command):
+
+class Environment(NamespaceCommand):
+
+    """ Commands for managing node environments """
+
+    name = "env"
+    parent = RootNamespace
+
+
+class Init(Command):
 
     """ Configure an environment to run nodes in """
 
-    name = "initenv"
-
+    name = "init"
+    parent = Environment
 
     def setup_optparse(self, parser, args):
         parser.add_option("-p", "--provider")
