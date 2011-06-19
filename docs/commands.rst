@@ -5,10 +5,19 @@ Other Commands
 buildbase
 =========
 
-Ubuntu users can use the buildbase command to build base images.
+Ubuntu users can use the buildbase command to build base images. It is based
+on ubuntu-vm-builder.
 
 ssh
 ===
+
+The ssh command makes it easier to SSH in to nodes in your cluster. For a one
+node cluster you might be able to get away with::
+
+    sidekick ssh
+
+Sidekick will determine the username, IP address and port of your node and
+drop you into an SSH terminal.
 
 nc
 ==
