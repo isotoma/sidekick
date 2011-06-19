@@ -99,6 +99,7 @@ class RootNamespace(NamespaceCommand):
 class Command(BaseCommand):
 
     parent = RootNamespace
+    varargs = False
 
     def __init__(self, args):
         self.cluster = None
@@ -118,7 +119,7 @@ class Command(BaseCommand):
 
         self.options, self.args = p.parse_args(args)
 
-        if len(self.args) != len(expected_args):
+        if not self.varargs and len(self.args) != len(expected_args):
             print p.error("Expected %d arguments, but got %d" % (len(expected_args), len(self.args)))
 
         self.environments = Environments(defaults_fn=ProviderType.get_defaults)

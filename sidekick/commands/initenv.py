@@ -30,16 +30,26 @@ class Define(Command):
 
     name = "define"
     parent = Environment
+    varargs = True
 
     def setup_optparse(self, parser, args):
-        parser.add_option("-p", "--provider")
         args.append("name")
+        args.append("provider")
 
     def do(self):
         if self.environments.contains(self.args[0]):
             raise SidekickError("That environment is already registered")
 
-        self.environments.register(self.args[0], self.options.provider, {})
+        # FIXME: Generalise this and pull it back down into Command
+        args = self.args[2:]
+        kwargs = {}
+        while args:
+            if not '=' in args[0]:
+                raise SidekickError("Invalid argument '%s'" % args[0])
+            key, value = args.pop(0).split('=', 1)
+            kwargs[key] = value
+
+        self.environments.register(self.args[0], self.args[1], kwargs)
 
 
 class List(Command):
