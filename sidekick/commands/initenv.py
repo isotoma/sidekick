@@ -24,11 +24,11 @@ class Environment(NamespaceCommand):
     parent = RootNamespace
 
 
-class Init(Command):
+class Define(Command):
 
     """ Configure an environment to run nodes in """
 
-    name = "init"
+    name = "define"
     parent = Environment
 
     def setup_optparse(self, parser, args):
@@ -41,4 +41,27 @@ class Init(Command):
 
         self.environments.register(self.args[0], self.options.provider, {})
 
+
+class List(Command):
+
+    """ List configured environments """
+
+    name = "list"
+    parent = Environment
+
+    def do(self):
+        envs = self.environments.all()
+
+        if len(envs) == 0:
+            print "There are no defined environments."
+
+        print "The following environments are defined:"
+        print ""
+
+        for name in self.environments.all():
+            env = self.environments.get(name)
+
+            print "    %s (provider=%s)" % (name, env["type"])
+
+        print ""
 

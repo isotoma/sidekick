@@ -28,10 +28,12 @@ class CommandType(type):
         cls = type.__new__(meta, class_name, bases, new_attrs)
 
         command = new_attrs.get("name", None)
+        id = (cls.parent, command)
+
         if command:
-            if command in meta.commands:
+            if id in meta.commands:
                 raise SidekickError("Command '%s' was already defined")
-            meta.commands[command] = cls
+            meta.commands[id] = cls
 
         return cls
 
@@ -80,11 +82,13 @@ class NamespaceCommand(BaseCommand):
         cmd = self.args[0]
         args = self.args[1:]
 
-        if cmd not in CommandType.commands:
+        id = (self.__class__, cmd)
+
+        if id not in CommandType.commands:
             self.usage()
             return
 
-        c = CommandType.commands[self.args[0]]
+        c = CommandType.commands[id]
         c(args).do()
 
 
