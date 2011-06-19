@@ -40,6 +40,8 @@ class Command(object):
 
     __metaclass__ = CommandType
 
+    parent = None
+
     def __init__(self, args):
         self.cluster = None
         self.sidekick_file = None
@@ -105,6 +107,52 @@ class Command(object):
     def get_clusters(self):
         for cluster in self.registry.all():
             yield self.get_cluster(cluster)
+
+
+class NamespaceCommand(Command):
+
+    def __init__(self, args):
+        self.args = args
+
+    def get_children(self):
+        for command in CommandType.commands.values():
+            if command.parent != self.__class__:
+                continue
+            yield command
+
+    def usage(self):
+        print "Usage: %s SUBCOMMAND [OPTIONS]" % sys.argv[0]
+
+        max_padding = max(len(name) for name in CommandType.commands.keys()) + 4
+        if max_padding > 4:
+            print ""
+            for c in self.get_children():
+                padding = " " * (max_padding - len(c.name))
+                print "    %s%s%s" % (c.name, padding, c.__doc__.split("\n")[0])
+            print ""
+
+    def do(self):
+        if len(self.args) == 0:
+            self.usage()
+            return
+
+        cmd = self.args[0]
+        args = self.args[1:]
+
+        if cmd not in CommandType.commands:
+            self.usage()
+            return
+
+        c = CommandType.commands[self.args[0]]
+        c(args).do()
+
+
+class RootNamespace(NamespaceCommand):
+    pass
+
+# FIXME: Split Command into BaseCommand and Command
+Command.parent = RootNamespace
+
 
 class ProjectCommand(Command):
 

@@ -19,42 +19,18 @@ Main entry point. Finds a Command object and hands control over to it.
 import sys, optparse, os, logging
 
 from sidekick.errors import SidekickError
-from sidekick.commands import CommandType
-
-def usage():
-    print "Usage: %s SUBCOMMAND [OPTIONS]" % sys.argv[0]
-
-    max_padding = max(len(name) for name in CommandType.commands.keys()) + 4
-    if max_padding > 4:
-        print ""
-        for name, command in CommandType.commands.items():
-            padding = " " * (max_padding - len(name))
-            print "    %s%s%s" % (name, padding, command.__doc__.split("\n")[0])
-        print ""
-
-
+from sidekick.commands import RootNamespace
 
 def main():
-    args = sys.argv[1:]
-
-    if len(args) == 0:
-        usage()
-        sys.exit(1)
-
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
-    command = args[0]
-    if not command in CommandType.commands:
-        print "Unknown subcommand; %s" % command
-        sys.exit(1)
-
-    cmd = CommandType.commands[command](args[1:])
-
+    cmd = RootNamespace(sys.argv[1:])
     try:
-        cmd.do()
+        rv = cmd.do()
     except SidekickError, e:
         print e.args[0]
         sys.exit(1)
 
     print "done."
+    sys.exit(rv)
 

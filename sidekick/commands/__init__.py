@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-from sidekick.commands.base import CommandType
+from sidekick.commands.base import RootNamespace, CommandType
 from sidekick.commands import (
     buildbase,
     define,
