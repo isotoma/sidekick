@@ -27,10 +27,11 @@ class Console(object):
         self.sftp = None
 
     def __enter__(self):
-        username, host, port = vm.get_ssh_details()
+        username, host, port = self.vm.get_ssh_details()
 
-        self.client = SSHClient()
-        self.client.load_system_host_keys()
+        self.client = paramiko.SSHClient()
+        #self.client.load_system_host_keys()
+        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.client.connect(host, port=int(port), username=username)
 
         self.transport = self.client.get_transport()
@@ -42,7 +43,7 @@ class Console(object):
         self.close()
 
     def upload(self, fp, path, mode=None):
-        dst = self.sftp.open(remote, 'wb')
+        dst = self.sftp.open(path, 'wb')
         shutil.copyfileobj(fp, dst)
         dst.close()
         if mode:
@@ -60,9 +61,9 @@ class Console(object):
         return chan.recv_exit_status()
 
     def run_script(self, script, delete=True):
-        scriptpath = "/tmp/script_%04d.sh" % random.rangrange(0, 9999)
+        scriptpath = "/tmp/script_%04d.sh" % random.randrange(0, 9999)
         self.upload(StringIO.StringIO(script), scriptpath, 0755)
-        rv = self.run([scriptpath])
+        rv = self.run(*[scriptpath])
         if delete:
             self.remove(scriptpath)
         return rv
