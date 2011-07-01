@@ -246,24 +246,6 @@ class VirtualMachine(BaseMachine):
     def open(self):
         pass
 
-    def put(self, path, data, chmod=None):
-        with Session(self.globl, self.machine) as s:
-            progress = s.console.guest.copyToGuest(SRC, path, USERNAME, PASSWORD, 0)
-            Progress(self.globl, progress).do()
-
-    def run(self, *args):
-        with Session(self.globl, self.machine) as s:
-            progress = s.console.guest.executeProgress(args[0], 0, args[1:], [], self.username, self.password, 0)
-            Progress(self.globl, progress).do()
-
-        return 1 # exit code
-
-    def run_script(self, script, interpreter="/bin/sh"):
-        return 1 #exit_code
-
-    def delete(self, path):
-        self.run("rm", path)
-
     def power_on(self):
         session = self.mgr.getSessionObject(self.vb)
 

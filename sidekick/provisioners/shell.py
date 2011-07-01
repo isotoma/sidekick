@@ -25,5 +25,6 @@ class ShellProvisioner(Provisioner):
             return True
 
     def provision(self):
-        self.machine.run_script(self.machine.config("script"))
+        with self.machine.console as c:
+            c.run_script(self.machine.config("script"))
 

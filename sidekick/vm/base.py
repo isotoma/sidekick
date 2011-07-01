@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from sidekick.provisioners import ProvisionerType
-
+from sidekick.console import Console
 from sidekick.errors import SidekickError
 
 
@@ -53,6 +53,10 @@ class BaseMachine(object):
 
     def __init__(self, config):
         self.config = config
+
+    @property
+    def console(self):
+        return Console(self)
 
     def provision(self):
         #if not self.is_running():

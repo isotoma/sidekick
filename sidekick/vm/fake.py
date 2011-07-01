@@ -41,18 +41,6 @@ class VirtualMachine(BaseMachine):
     def get_powerstate(self):
         return "running"
 
-    def put(self, path, data, chmod=None):
-        pass
-
-    def run(self, *args):
-        pass
-
-    def run_script(self, script, interpreter="/bin/sh"):
-        return 1 #exit_code
-
-    def delete(self, path):
-        pass
-
     def power_on(self):
         pass
 

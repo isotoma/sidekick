@@ -79,7 +79,8 @@ class YaybuProvisioner(Provisioner):
         return False
 
     def bootstrap(self):
-        self.machine.run_script(bootstrap)
+        with self.machine.console as c:
+            c.run_script(bootstrap)
 
     def provision(self):
         register_builtin_keys()
