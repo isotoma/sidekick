@@ -13,19 +13,20 @@
 # limitations under the License.
 
 
-from sidekick.commands.base import RootNamespace, CommandType
-from sidekick.commands import (
-    buildbase,
-    define,
-    deploy,
-    destroy,
-    down,
-    initenv,
-    nc,
-    rollback,
-    snapshot,
-    ssh,
-    test,
-    up,
-    )
+import sys
+from testtools.run import main
+
+from sidekick.commands.base import Command
+
+class Test(Command):
+
+    """ Find and run any tests in the current directory """
+
+    name = "test"
+
+    def setup_optparse(self, p, a):
+        p.add_option("-e", "--environment", action="store", default=None)
+
+    def do(self):
+        main([sys.argv[0]] + self.args, sys.stdout)
 
