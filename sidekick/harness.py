@@ -15,7 +15,15 @@
 from yaybu.harness.fixture import Fixture
 
 
+class ClusterFixture(Fixture):
+
+    pass
+
+
 class NodeFixture(Fixture):
+
+    def call(self, *args):
+        pass
 
     def exists(self, path):
         pass
