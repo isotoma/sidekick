@@ -25,6 +25,8 @@ except ImportError:
     has_discover = False
 
 from sidekick.commands.base import Command
+from sidekick.registry import Environments
+from sidekick.vm import ProviderType
 
 
 class Test(Command):
@@ -46,6 +48,14 @@ class Test(Command):
         return loader.discover(".", "test_*.py", None)
 
     def do(self):
+        environments = Environments(defaults_fn=ProviderType.get_defaults)
+        if self.options.environment:
+            environment = environments.get(self.opts.environment)
+        else:
+            environment = environments.get(environments.get_default())
+
+        env = ProviderType.providers[environment['type']](environment)
+
         if self.catchbreak and getattr(unittest, 'installHandler', None):
             unittest.installHandler()
 

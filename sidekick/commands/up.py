@@ -27,7 +27,7 @@ class Up(ProjectCommand):
             cluster = self.get_current_cluster()
         except SidekickError:
             sidekick_file = os.path.abspath("Sidekick")
-            self.registry.register(os.getcwd(), self.environments.all()[0], sidekick_file)
+            self.registry.register(os.getcwd(), self.environments.get_default(), sidekick_file)
 
             cluster = self.get_current_cluster()
 
