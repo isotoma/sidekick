@@ -14,9 +14,18 @@
 
 
 import sys
-from testtools.run import main
+import unittest
+from testtools.run import TestToolsTestRunner
+
+try:
+   from discover import DiscoveringTestLoader as Loader
+   has_discover = True
+except ImportError:
+    from unittest import TestLoader as Loader
+    has_discover = False
 
 from sidekick.commands.base import Command
+
 
 class Test(Command):
 
@@ -24,9 +33,24 @@ class Test(Command):
 
     name = "test"
 
+    catchbreak = False
+    verbosity = 2
+    failfast = False
+    buffer = False
+
     def setup_optparse(self, p, a):
         p.add_option("-e", "--environment", action="store", default=None)
 
+    def get_tests(self):
+        loader = Loader()
+        return loader.discover(".", "test_*.py", None)
+
     def do(self):
-        main([sys.argv[0]] + self.args, sys.stdout)
+        if self.catchbreak and getattr(unittest, 'installHandler', None):
+            unittest.installHandler()
+
+        runner = TestToolsTestRunner(sys.stdout)
+        results = runner.run(self.get_tests())
+
+        sys.exit(not results.wasSuccessful())
 
