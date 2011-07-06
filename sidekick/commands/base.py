@@ -155,10 +155,14 @@ class Command(BaseCommand):
 
     def get_cluster(self, name):
         cluster = self.registry.get(name)
+        name = cluster['name']
+        env = cluster['env']
+
+        config = yay.load_uri(cluster["cached-sidekick-file"])
+        cluster.update(config)
+
         return Cluster(
-            cluster['name'],
-            self.get_environment(cluster['env']),
-            cluster)
+            name, self.get_environment(env), cluster)
 
     def get_clusters(self):
         for cluster in self.registry.all():
