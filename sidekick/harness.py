@@ -15,39 +15,37 @@
 from yaybu.harness.fixture import Fixture
 
 
+class NodeFixtureAdaptor(Fixture):
+
+    def __init__(self, vm):
+        self.vm = vm
+
+    def __getattr__(self, param):
+        return getattr(self.vm, param)
+
+
 class ClusterFixture(Fixture):
 
-    pass
+    def __init__(self):
+        super(ClusterFixture, self).__init__()
+        self.nodes = []
 
+    def setUp(self):
+        for n in self.nodes:
+            n.power_on()
 
-class NodeFixture(Fixture):
+    def cleanUp(self):
+        for node in self.nodes:
+            try:
+                node.cleanUp()
+            except:
+                pass
 
-    def call(self, *args):
-        pass
+            node.destroy()
 
-    def exists(self, path):
-        pass
-
-    def isdir(self, path):
-        pass
-
-    def open(self, path, mode='r'):
-        return self.console.open(path, mode)
-
-    def touch(self, path):
-        with self.open(path, "w") as fp:
-            fp.write("")
-
-    def chmod(self, path, mode):
-        self.console.chmod(path, mode)
-
-    def readlink(self, path):
-         return self.console.readlink(path)
-
-    def symlink(self, source, dest):
-        self.console.symlink(source, dest)
-
-    def stat(self, path):
-        return self.console.path(path)
-
+    def add_node(self, config):
+        vm = self.env.provide(config)
+        fixture = NodeFixtureAdaptor(vm)
+        self.nodes.append(fixture)
+        return fixture
 

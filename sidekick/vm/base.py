@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import paramiko
+
 from sidekick.provisioners import ProvisionerType
 from sidekick.console import Console
 from sidekick.errors import SidekickError
@@ -54,10 +56,6 @@ class BaseMachine(object):
     def __init__(self, config):
         self.config = config
 
-    @property
-    def console(self):
-        return Console(self)
-
     def provision(self):
         #if not self.is_running():
         #    raise errors.VmNotRunning()
@@ -80,4 +78,67 @@ class BaseMachine(object):
         # Actually do this thing
         p(self).provision()
 
+
+class BaseMachineWithSSHConsole(BaseMachine):
+
+    def __init__(self, config):
+        super(BaseMachineWithSSHConsole, self).__init__(config)
+
+        self._client = None
+        self._transport = None
+        self._sftp = None
+
+    @property
+    def client(self):
+        if not self._client:
+            username, host, port = self.get_ssh_details()
+
+            self._client = paramiko.SSHClient()
+            #self._client.load_system_host_keys()
+            self._client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self._client.connect(host, port=int(port), username=username)
+        return self._client
+
+    @property
+    def transport(self):
+        if not self._transport:
+            self.transport = self.client.get_transport()
+        return self._transport
+
+    @property
+    def sftp(self):
+        if not self._sftp:
+            self._sftp = self.client.open_sftp()
+        return self._sftp
+
+    def upload(self, fp, path, mode=None):
+        dst = self.sftp.open(path, 'wb')
+        shutil.copyfileobj(fp, dst)
+        dst.close()
+        if mode:
+            self.sftp.chmod(path, mode)
+
+    def download(self, remote, local):
+        self.sftp.get(remote, local)
+
+    def remove(self, path):
+        self.sftp.remove(path)
+
+    def call(self, *args):
+        chan = self.client.get_transport().open_session()
+        chan.exec_command(' '.join(args))
+        return chan.recv_exit_status()
+
+    def script(self, script, delete=True):
+        scriptpath = "/tmp/script_%04d.sh" % random.randrange(0, 9999)
+        self.upload(StringIO.StringIO(script), scriptpath, 0755)
+        rv = self.call(*[scriptpath])
+        if delete:
+            self.remove(scriptpath)
+        return rv
+
+    def close(self):
+        if self.transport.is_active():
+            self.sftp.close()
+            self.transport.close()
 

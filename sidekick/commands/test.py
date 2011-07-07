@@ -28,6 +28,8 @@ from sidekick.commands.base import Command
 from sidekick.registry import Environments
 from sidekick.vm import ProviderType
 
+from sidekick.harness import ClusterFixture
+
 
 class Test(Command):
 
@@ -47,17 +49,20 @@ class Test(Command):
         loader = Loader()
         return loader.discover(".", "test_*.py", None)
 
-    def do(self):
+    def get_environment(self):
         environments = Environments(defaults_fn=ProviderType.get_defaults)
         if self.options.environment:
             environment = environments.get(self.opts.environment)
         else:
             environment = environments.get(environments.get_default())
 
-        env = ProviderType.providers[environment['type']](environment)
+        return ProviderType.providers[environment['type']](environment)
 
+    def do(self):
         if self.catchbreak and getattr(unittest, 'installHandler', None):
             unittest.installHandler()
+
+        ClusterFixture.env = self.get_environment()
 
         runner = TestToolsTestRunner(sys.stdout)
         results = runner.run(self.get_tests())
