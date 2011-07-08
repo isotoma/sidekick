@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import paramiko
+import paramiko, time, random
+import StringIO
 
 from sidekick.provisioners import ProvisionerType
 from sidekick.console import Console
@@ -56,18 +57,18 @@ class BaseMachine(object):
     def __init__(self, config):
         self.config = config
 
-    def provision(self):
+    def provision(self, backend=None, **kwargs):
         #if not self.is_running():
         #    raise errors.VmNotRunning()
 
         print "Provisioning vm..."
 
         p = None
-        if "provisioner" in self.config:
+        if backend:
             try:
-                p = ProvisionerType.provisioners[self.config["provisioner"]]
+                p = ProvisionerType.provisioners[backend]
             except KeyError:
-                raise SidekickError("There is no such provisioner: '%s'" % self.config["provisioner"])
+                raise SidekickError("There is no such provisioner: '%s'" % backend)
         else:
             for p in ProvisionerType.provisioners.values():
                 if p.can_provision(self):
@@ -76,7 +77,7 @@ class BaseMachine(object):
                 raise SidekickError("Cannot find a suitable provisioner")
 
         # Actually do this thing
-        p(self).provision()
+        p(self).provision(**kwargs)
 
 
 class BaseMachineWithSSHConsole(BaseMachine):
@@ -127,7 +128,18 @@ class BaseMachineWithSSHConsole(BaseMachine):
     def call(self, *args):
         chan = self.client.get_transport().open_session()
         chan.exec_command(' '.join(args))
-        return chan.recv_exit_status()
+
+        stdout = ""
+        stderr = ""
+
+        while not chan.exit_status_ready():
+            if chan.recv_ready():
+                stdout += chan.recv_stdout(9999)
+            if chan.recv_stderr_ready():
+                stderr += chan.recv_stderr(9999)
+            time.sleep(0.1)
+
+        return stdout, stderr, chan.recv_exit_status()
 
     def script(self, script, delete=True):
         scriptpath = "/tmp/script_%04d.sh" % random.randrange(0, 9999)

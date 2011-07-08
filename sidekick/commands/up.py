@@ -33,6 +33,6 @@ class Up(ProjectCommand):
 
         for node in cluster.get_nodes():
             node.power_on()
-            node.provision()
+            node.provision(**node.config)
 
 
