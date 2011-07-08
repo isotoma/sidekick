@@ -111,7 +111,7 @@ class YaybuProvisioner(Provisioner):
             logfile = "-"
             host = "%s@%s:%s" % self.machine.get_ssh_details()
             user = "root"
-            ypath = self.machine.config["yaybu"].get("path", [])
+            ypath = kwargs.get("path", [])
             simulate = False
             verbose = False
             resume = True
