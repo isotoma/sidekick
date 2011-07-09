@@ -4,6 +4,7 @@ Changelog for sidekick
 0.1.0 (unreleased)
 ------------------
 
+- Test runner and fixtures to help orchestrate testing in VMs
 - Able to deploy to Brightbox
 - Able to deploy to VMWare
 - Able to generate VMWare base images using ubuntu-vmbuilder
