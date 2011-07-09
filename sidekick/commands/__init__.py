@@ -25,6 +25,7 @@ from sidekick.commands import (
     rollback,
     snapshot,
     ssh,
+    test,
     up,
     )
 

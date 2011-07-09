@@ -25,6 +25,7 @@ setup(name='Sidekick',
           'paramiko',
       ],
       extras_require = {
+          'harness': ['testtools', 'discover', ],
           'test': ['testtools', 'discover', 'mock'],
           },
       entry_points = """

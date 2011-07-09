@@ -17,7 +17,7 @@ import os
 
 from sidekick.errors import SidekickError
 from sidekick.progress import Progress as BaseProgress
-from sidekick.vm import BaseProvider, BaseMachine
+from sidekick.vm import BaseProvider, BaseMachineWithSSHConsole
 from sidekick.images import ImageRegistry
 
 class Provider(BaseProvider):
@@ -206,7 +206,7 @@ class Session(object):
             self.session = None
 
 
-class VirtualMachine(BaseMachine):
+class VirtualMachine(BaseMachineWithSSHConsole):
 
     username = "sidekick"
     password = "sidekick"

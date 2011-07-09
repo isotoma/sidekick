@@ -34,8 +34,7 @@ class Cluster(object):
         return self._get_machine(node)
 
     def get_nodes(self):
-        config = yay.load_uri(self.config["cached-sidekick-file"])
-        for node in config.get("nodes", []):
+        for node in self.config.get("nodes", []):
             yield self._get_machine(node)
 
     def destroy(self):

@@ -93,6 +93,9 @@ class Environments(BaseRegistry):
 
     file = "environments.yay"
 
+    def get_default(self):
+        return self.all()[0]
+
     def register(self, name, type, config):
         if self.contains(name):
             raise SidekickError("'%s' is already defined")

@@ -23,5 +23,5 @@ class Deploy(ProjectCommand):
 
     def do(self):
         for node in self.get_current_cluster().get_nodes():
-            node.provision()
+            node.provision(**node.config)
 

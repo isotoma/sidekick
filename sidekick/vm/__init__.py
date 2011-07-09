@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-from sidekick.vm.base import ProviderType, BaseProvider, BaseMachine
+from sidekick.vm.base import ProviderType, BaseProvider, BaseMachine, BaseMachineWithSSHConsole
 from sidekick.vm import (
     fake,
     virtualbox,

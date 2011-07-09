@@ -19,7 +19,7 @@ from ctypes import byref, string_at, c_char_p, c_int #, create_string_buffer
 from sidekick.errors import SidekickError
 from sidekick import util
 from sidekick.images import ImageRegistry
-from sidekick.vm import BaseProvider, BaseMachine
+from sidekick.vm import BaseProvider, BaseMachineWithSSHConsole
 from sidekick.vm.vmware import low, errors
 
 class Job(object):
@@ -136,10 +136,10 @@ class ViServerProvider(Provider):
         super(ViServerProvier, self).__init__()
 
 
-class VirtualMachine(BaseMachine):
+class VirtualMachine(BaseMachineWithSSHConsole):
 
     def __init__(self, path, config, host, default_powerop_start=low.VIX_VMPOWEROP_NORMAL):
-        BaseMachine.__init__(self, config)
+        BaseMachineWithSSHConsole.__init__(self, config)
 
         self.host = host
         self.path = path

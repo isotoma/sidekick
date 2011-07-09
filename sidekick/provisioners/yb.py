@@ -79,18 +79,20 @@ class YaybuProvisioner(Provisioner):
         return False
 
     def bootstrap(self):
-        with self.machine.console as c:
-            c.run_script(bootstrap)
+        self.machine.script(bootstrap)
 
-    def provision(self):
+    def provision(self, **kwargs):
         register_builtin_keys()
 
         self.bootstrap()
 
         conf = Config()
 
-        recipe = self.machine.config["yaybu"]["recipe"]
-        conf.load_uri(recipe)
+        if "recipe" in kwargs:
+            conf.load_uri(kwargs['recipe'])
+
+        if "conf" in kwargs:
+            conf.load(StringIO.StringIO(kwargs['conf']))
 
         sk = dict(sidekick={
             "host": {
@@ -109,7 +111,7 @@ class YaybuProvisioner(Provisioner):
             logfile = "-"
             host = "%s@%s:%s" % self.machine.get_ssh_details()
             user = "root"
-            ypath = self.machine.config["yaybu"].get("path", [])
+            ypath = kwargs.get("path", [])
             simulate = False
             verbose = False
             resume = True
