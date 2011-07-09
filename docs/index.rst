@@ -5,7 +5,6 @@ Sidekick is a tool for building virtual machines and demonstration cloud instanc
 your projects Yaybu configuration. From now on all your dev environments have the same
 initial setup: sidekick up.
 
-NOTE: This documentation is currently serving as a guide to help finish implementing the core sidekick features. Some commands may not be implemented as described or might still be missing entirely.
 
 Contents:
 
@@ -17,6 +16,7 @@ Contents:
    environments
    clusters
    commands
+   testing
 
 Indices and tables
 ==================
