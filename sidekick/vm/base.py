@@ -134,7 +134,7 @@ class BaseMachineWithSSHConsole(BaseMachine):
 
         while not chan.exit_status_ready():
             if chan.recv_ready():
-                stdout += chan.recv_stdout(9999)
+                stdout += chan.recv(9999)
             if chan.recv_stderr_ready():
                 stderr += chan.recv_stderr(9999)
             time.sleep(0.1)
