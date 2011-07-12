@@ -141,7 +141,7 @@ class Command(BaseCommand):
             return self.get_cluster(self.options.cluster)
 
         path = ["/"] + list(os.getcwd().split(os.path.sep)) + ["Sidekick"]
-        while path and not os.path.exists(os.path.join(*path)):
+        while len(path) > 1 and not os.path.exists(os.path.join(*path)):
             path = path[:-2] + ["Sidekick"]
 
         if not os.path.exists(os.path.join(*path)):
