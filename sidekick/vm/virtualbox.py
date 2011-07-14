@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-import os
+import os, glob
 
 from sidekick.errors import SidekickError
 from sidekick.progress import Progress as BaseProgress
