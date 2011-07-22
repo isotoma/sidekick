@@ -88,12 +88,6 @@ class YaybuProvisioner(Provisioner):
 
         conf = Config()
 
-        if "recipe" in kwargs:
-            conf.load_uri(kwargs['recipe'])
-
-        if "conf" in kwargs:
-            conf.load(StringIO.StringIO(kwargs['conf']))
-
         sk = dict(sidekick={
             "host": {
                 "ips": dict(util.interfaces()),
@@ -101,6 +95,12 @@ class YaybuProvisioner(Provisioner):
             "primaryip": self.machine.get_ip(),
             })
         conf.load(StringIO.StringIO(dump(sk)))
+
+        if "recipe" in kwargs:
+            conf.load_uri(kwargs['recipe'])
+
+        if "conf" in kwargs:
+            conf.load(StringIO.StringIO(kwargs['conf']))
 
         config = conf.get()
         with open("foo.yay", "w") as f:
