@@ -105,6 +105,9 @@ HERE
 
 echo Installing yaybu
 chroot $1 apt-get install -y -q rsyslog python-setuptools python-yaybu
+
+chroot $1 sed -i -e 's/^# defoptions=quiet splash/# defoptions=/g' /boot/grub/menu.lst
+chroot $1 update-grub
 """
 
 firstboot = """
