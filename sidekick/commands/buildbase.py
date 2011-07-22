@@ -23,8 +23,18 @@ echo 1>&2 Installing virtualbox guest additions...
 """
 
 vmware = """
+
+chroot $1 apt-get install -y -q linux-headers-server open-vm-tools dkms open-vm-source
+
+cat > $1/etc/rc2.d/S99-first-boot-vmware << EOF
+#! /bin/sh
 echo 1>&2 Installing vmware tools
-chroot $1 apt-get install -y -q linux-headers-$(uname -r) open-vm-dkms open-vm-tools
+apt-get install -y -q open-vm-dkms
+/etc/init.d/open-vm-tools restart
+rm /etc/rc2.d/S99-first-boot-vmware
+EOF
+
+chroot $1 chmod +x /etc/rc2.d/S99-first-boot-vmware
 """
 
 postboot = """\
