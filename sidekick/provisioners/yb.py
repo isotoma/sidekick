@@ -119,6 +119,9 @@ class YaybuProvisioner(Provisioner):
             env_passthrough = []
 
         r = RemoteRunner()
+        #r.load_host_keys(
+        r.set_missing_host_key_policy("no")
+
         rv = r.run(opts, ["foo.yay"])
 
         print rv
