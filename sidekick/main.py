@@ -22,10 +22,12 @@ from sidekick.errors import SidekickError
 from sidekick.commands import RootNamespace
 
 def main():
-    logging.basicConfig(format="%(message)s", level=logging.ERROR)
-
     root = logging.getLogger("sidekick")
-    root.setLevel(logging.DEBUG)
+    root.setLevel(logging.ERROR)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    root.addHandler(handler)
 
     cmd = RootNamespace(sys.argv[1:])
     try:
