@@ -139,6 +139,11 @@ class BaseMachineWithSSHConsole(BaseMachine):
                 stderr += chan.recv_stderr(9999)
             time.sleep(0.1)
 
+        if chan.recv_ready():
+            stdout += chan.recv(9999)
+        if chan.recv_stderr_ready():
+            stderr += chan.recv_stderr(9999)
+
         return stdout, stderr, chan.recv_exit_status()
 
     def script(self, script, delete=True):
