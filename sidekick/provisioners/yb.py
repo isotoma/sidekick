@@ -16,6 +16,7 @@
 import StringIO
 from yay.config import Config, dump
 from yaybu.core.remote import RemoteRunner
+from yaybu.core.runcontext import RunContext
 from sidekick import util
 from sidekick.provisioners.base import Provisioner
 from sidekick.util import register_builtin_keys
@@ -102,10 +103,6 @@ class YaybuProvisioner(Provisioner):
         if "conf" in kwargs:
             conf.load(StringIO.StringIO(kwargs['conf']))
 
-        config = conf.get()
-        with open("foo.yay", "w") as f:
-            f.write(dump(config))
-
         class opts:
             log_level = "info"
             logfile = "-"
@@ -118,11 +115,15 @@ class YaybuProvisioner(Provisioner):
             no_resume = False
             env_passthrough = []
 
+        ctx = RunContext([], opts)
+        ctx.set_config(conf)
+
+
         r = RemoteRunner()
         #r.load_host_keys(
         r.set_missing_host_key_policy("no")
 
-        rv = r.run(opts, ["foo.yay"])
+        rv = r.run(ctx)
 
-        print rv
+        return rv
 
