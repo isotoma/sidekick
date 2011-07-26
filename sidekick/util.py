@@ -5,9 +5,12 @@ import array
 import struct
 import socket
 import platform
+import shutil
 
 SIOCGIFCONF = 0x8912
 MAXBYTES = 8096
+
+datadir = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
 
 def interfaces():
     if platform.system() == "Darwin":
@@ -43,7 +46,16 @@ def interfaces():
 
 def register_builtin_keys():
     path = os.path.join(os.path.dirname(__file__), "resources", "sidekick_rsa")
-    os.system("ssh-add %s" % path)
+    dstpath = os.path.join(datadir, "sidekick", "resources", "sidekick_rsa")
+
+    if not os.path.exists(os.path.dirname(dstpath)):
+        os.makedirs(os.path.dirname(dstpath))
+
+    shutil.copyfile(path, dstpath)
+    os.chmod(dstpath, 0600)
+    shutil.copyfile(path+".pub", dstpath+".pub")
+
+    os.system("ssh-add %s" % dstpath)
 
 def tail(path):
     #FIXME: Track inode num so we can survive logrotate
