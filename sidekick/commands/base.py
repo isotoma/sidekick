@@ -15,6 +15,7 @@
 
 import os, sys, optparse
 
+import yay
 from sidekick.errors import SidekickError
 from sidekick.cluster import Cluster
 from sidekick.registry import Instances, Environments
