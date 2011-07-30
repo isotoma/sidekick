@@ -15,10 +15,26 @@
 from yaybu.harness.fixture import Fixture
 
 
-class NodeFixtureAdaptor(Fixture):
+class NodeFixture(Fixture):
 
-    def __init__(self, vm):
-        self.vm = vm
+    def __init__(self, name, base, fixture):
+        super(NodeFixture, self).__init__()
+        self.name = name
+        self.base = base
+        self.fixture = fixture
+        self.vm = None
+        self.cluster = None
+
+    def setParent(self, cluster):
+        self.cluster = cluster
+        setattr(cluster, self.name, self)
+
+    def setUp(self):
+        self.vm = self.cluster.env.provide({
+            "name": self.name,
+            "base": self.base,
+            })
+        self.vm.power_on()
 
     def __getattr__(self, param):
         return getattr(self.vm, param)
@@ -26,13 +42,16 @@ class NodeFixtureAdaptor(Fixture):
 
 class ClusterFixture(Fixture):
 
-    def __init__(self):
+    def __init__(self, nodes=None):
         super(ClusterFixture, self).__init__()
-        self.nodes = []
+        self.nodes = nodes or []
+        [n.setParent(self) for n in self.nodes]
 
     def setUp(self):
         for n in self.nodes:
-            n.power_on()
+            n.setUp()
+        for n in self.nodes:
+            n.vm.provision(backend="yaybu", conf=n.fixture)
 
     def cleanUp(self):
         for node in self.nodes:
@@ -42,10 +61,4 @@ class ClusterFixture(Fixture):
                 pass
 
             node.destroy()
-
-    def add_node(self, config):
-        vm = self.env.provide(config)
-        fixture = NodeFixtureAdaptor(vm)
-        self.nodes.append(fixture)
-        return fixture
 

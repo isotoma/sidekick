@@ -119,6 +119,9 @@ class BaseMachineWithSSHConsole(BaseMachine):
         if mode:
             self.sftp.chmod(path, mode)
 
+    def open(self, path, mode='r'):
+        return self.sftp.open(path, mode)
+
     def download(self, remote, local):
         self.sftp.get(remote, local)
 
